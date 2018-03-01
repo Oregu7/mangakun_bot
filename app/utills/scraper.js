@@ -1,4 +1,5 @@
 const feedparser = require("./feedparser");
+const request = require("request");
 const rp = require("request-promise");
 const cheerio = require("cheerio");
 
@@ -60,6 +61,58 @@ async function getManga(link, site = "http://readmanga.me") {
     };
 }
 
-exports.scrap = scrap;
-exports.getManga = getManga;
-exports.getMangaList = getMangaList;
+async function getChapterImages(url) {
+    const images = [];
+    const regexp = /(rm_h\.init\( \[\[)(.*)\]\]/i;
+    const $ = await rp.get(`${url}?mature=1`);
+    const data = $.match(regexp)[2].replace(/[\'\"]+/g, "");
+    data.split("],").forEach((val) => {
+        let el = val.split(",");
+        images.push({
+            src: el[1] + el[2],
+            width: Number(el[3]),
+            height: Number(el[4]),
+        });
+    });
+
+    return images;
+}
+
+function downloadImage(chapterURL, src) {
+    const req = request.get({
+        uri: src,
+        headers: {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Referer": chapterURL,
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36",
+            "X-Compress": "null",
+        },
+    });
+
+    return req;
+}
+
+function createInputMediaPhoto(chapterURL, src) {
+    const req = downloadImage(chapterURL, src);
+
+    return {
+        type: "photo",
+        media: {
+            source: req,
+        },
+    };
+}
+
+module.exports = {
+    scrap,
+    getManga,
+    getMangaList,
+    getChapterImages,
+    downloadImage,
+    createInputMediaPhoto,
+};

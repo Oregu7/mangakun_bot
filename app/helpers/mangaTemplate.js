@@ -26,6 +26,7 @@ exports.getKeyboard = (manga) => {
             Markup.callbackButton("\u{1F4EE}Подписаться", `sub:${manga.id}`),
             Markup.urlButton("\u{1F4D6}Читать", manga.url),
         ],
+        [Markup.callbackButton("\u{1F4BE}СКАЧАТЬ", `gl_chapter:${manga.id}`)],
         [Markup.switchToCurrentChatButton("\u{1F50D}Продолжить поиск...", "")],
     ]);
     return keyboard;

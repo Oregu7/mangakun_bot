@@ -3,6 +3,8 @@ const inlineQueryController = require("./inlinequery-controller");
 const addMangaController = require("./addManga-controller");
 const addMangaCommandController = require("./addMangaCommand-controller");
 const searchController = require("./search-controller");
+const getChaptersController = require("./getChapters-controller");
+const callbackController = require("./callbackController");
 
 module.exports = {
     startController,
@@ -10,4 +12,6 @@ module.exports = {
     addMangaController,
     addMangaCommandController,
     searchController,
+    getChaptersController,
+    callbackController,
 };

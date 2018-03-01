@@ -8,11 +8,11 @@ async function main(first, last) {
     const step = 70;
     for (let i = first; i <= last; i += 1) {
         const url = `http://mintmanga.com/list?type=&sortType=rate&offset=${i * step}&max=${step}`;
-        const mangaList = await scraper.getMangaList(url);
+        const mangaList = await scraper.getMangaList(url, "http://mintmanga.com");
         const pageNumber = colors.red(i + 1);
         console.log(`page[${pageNumber}] => ` + "start".blue);
         for (let mangaURL of mangaList) {
-            let manga = await scraper.getManga(mangaURL);
+            let manga = await scraper.getManga(mangaURL, "http://mintmanga.com");
             try {
                 await MangaModel.create(manga);
                 console.log(manga.name, " => ", "success".green);
