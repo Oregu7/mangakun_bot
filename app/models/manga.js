@@ -15,5 +15,29 @@ const MangaSchema = mongoose.Schema({
     subscribers: [{ type: Number, index: true }],
 });
 
+MangaSchema.statics.getManga = function(query = {}) {
+    return this.findOne(query)
+        .select("-chapters -subscribers")
+        .sort("-popularity");
+};
+
+MangaSchema.statics.searchManga = function(text) {
+    const pattern = new RegExp(text, "i");
+    return this
+        .find({ $or: [{ name: pattern }, { title: pattern }] })
+        .select("-chapters -subscribers")
+        .sort("-popularity")
+        .limit(30);
+};
+
+MangaSchema.statics.findByIdAndPopulateChapters = function(id) {
+    return this.findById(id)
+        .select("-subscribers")
+        .populate({
+            path: "chapters",
+            select: "title url",
+            options: { sort: { number: -1 }, limit: 30 },
+        });
+};
 
 module.exports = mongoose.model("Manga", MangaSchema);

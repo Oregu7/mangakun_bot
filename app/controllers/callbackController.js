@@ -3,6 +3,7 @@ const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const MangaModel = require("../models/manga");
 const compileMessage = require("../helpers/compileMessage");
+const mangaManager = require("../helpers/mangaManager");
 const { createInputMediaPhoto, getChapterImages } = require("../utills/scraper");
 
 const callback = new Router(({ callbackQuery }) => {
@@ -43,6 +44,21 @@ callback.on("gl_chapter", async(ctx) => {
         let ok = await ctx.telegram.sendMediaGroup(userID, page.map((image) => createInputMediaPhoto(url, image.src)));
         console.log(ok);
     }
+});
+
+callback.on("chapters", async(ctx) => {
+    const manga = await MangaModel.findByIdAndPopulateChapters(ctx.state.payload);
+    const message = manga.chapters.map((chapter, indx) =>
+        `${indx + 1}) <a href = "${chapter.url}">${chapter.title}</a>`
+    ).join("\n");
+    const keyboard = Markup.inlineKeyboard([Markup.callbackButton("\u{1F519}НАЗАД", `back:${manga.id}`)]);
+    ctx.editMessageText(message, Extra.HTML().webPreview(false).markup(keyboard));
+});
+
+callback.on("back", async(ctx) => {
+    const manga = await MangaModel.getManga({ _id: ctx.state.payload });
+    return ctx.editMessageText(mangaManager.getMessage(manga), Extra.HTML()
+        .markup(mangaManager.getKeyboard(manga)));
 });
 
 module.exports = callback;

@@ -1,27 +1,21 @@
 const { uid } = require("rand-token");
 const escape = require("escape-html");
 const MangaModel = require("../models/manga");
-const mangaTemplate = require("../helpers/mangaTemplate");
+const mangaManager = require("../helpers/mangaManager");
 
 module.exports = async(ctx) => {
     try {
-        const pattern = new RegExp(ctx.inlineQuery.query, "i");
-        const mangaList = await MangaModel
-            .find({ $or: [{ name: pattern }, { title: pattern }] })
-            .sort("-popularity")
-            .limit(30);
+        const mangaList = await MangaModel.searchManga(ctx.inlineQuery.query);
         const results = mangaList.map((manga) => ({
             id: uid(11),
             type: "article",
-            // photo_url: manga.image,
             thumb_url: manga.thumb,
-            title: manga.name,
+            title: escape(manga.name),
             description: escape(`${manga.description.slice(0, 70)}...`),
-            // caption: manga.description.slice(0, 195) + "...",
-            message_text: mangaTemplate.getMessage(manga),
+            message_text: mangaManager.getMessage(manga),
             parse_mode: "HTML",
             disable_web_page_preview: false,
-            ...mangaTemplate.getKeyboard(manga).extra(),
+            ...mangaManager.getKeyboard(manga).extra(),
         }));
 
         let extra = { cache_time: 300 };

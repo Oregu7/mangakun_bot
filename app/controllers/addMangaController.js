@@ -1,22 +1,14 @@
-const Extra = require("telegraf/extra");
 const MangaModel = require("../models/manga");
 const { getManga } = require("../utills/scraper");
-const mangaTemplate = require("../helpers/mangaTemplate");
+const { sendManga } = require("../helpers/mangaManager");
 
 const baseUrl = "http://readmanga.me";
-
-function sendManga(ctx, manga) {
-    const message = mangaTemplate.getMessage(manga);
-    const keyboard = mangaTemplate.getKeyboard(manga);
-
-    return ctx.reply(message, Extra.HTML().markup(keyboard));
-}
 
 module.exports = async(ctx) => {
     const [mangaName] = ctx.match.slice(3, 4);
     if (!mangaName) return ctx.reply("Что-то пошло не так :(");
     // ищем мангу с данным url-ом в базе
-    const mangaExist = await MangaModel.findOne({ url: `${baseUrl}/${mangaName}` });
+    const mangaExist = await MangaModel.getManga({ url: `${baseUrl}/${mangaName}` });
     if (mangaExist) return sendManga(ctx, mangaExist);
     // парсим данные с сайта
     ctx.reply("Подготавливаю мангу для скачивания, нужно немного подождать (◕‿◕)");
