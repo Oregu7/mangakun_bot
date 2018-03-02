@@ -1,7 +1,7 @@
 const Router = require("telegraf/router");
 const Extra = require("telegraf/extra");
 const compileMessage = require("../helpers/compileMessage");
-const addMangaCommandController = require("./addMangaCommand-controller");
+const addMangaCommandController = require("./addMangaCommandController");
 
 const startRouter = new Router((ctx) => {
     const parts = ctx.message.text.split(" ");

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -10,10 +11,7 @@ const MangaSchema = mongoose.Schema({
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
     genres: [String],
-    chapters: [{
-        title: { type: String, required: true },
-        url: { type: String, required: true },
-    }],
+    chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
     subscribers: [{ type: Number, index: true }],
 });
 

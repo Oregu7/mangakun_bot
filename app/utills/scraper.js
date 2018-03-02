@@ -1,7 +1,8 @@
-const feedparser = require("./feedparser");
 const request = require("request");
 const rp = require("request-promise");
 const cheerio = require("cheerio");
+const feedparser = require("./feedparser");
+const ChapterModel = require("../models/chapter");
 
 function scrap(url) {
     return rp.get({
@@ -46,7 +47,7 @@ async function getManga(link, site = "http://readmanga.me") {
     const rss = manga.find(".manga-actions").children("a").eq(1).attr("href");
     // проверяем существование rss ленты и достаем главы
     if (!rss) throw new Error(`rss feed is not exist by url [${link}]`);
-    const chapters = (await feedparser(site + rss)).slice(0, 5);
+    const chapters = await createAndGetChaptersID(site + rss);
     return {
         title,
         name,
@@ -59,6 +60,16 @@ async function getManga(link, site = "http://readmanga.me") {
         popularity,
         thumb,
     };
+}
+
+async function createAndGetChaptersID(rss) {
+    const chapters = (await feedparser(rss, { date: true })).reverse().map((chapter, indx) => {
+        chapter.number = indx + 1;
+        return chapter;
+    });
+    if (!chapters || chapters.length == 0) return [];
+    const chaptersID = (await ChapterModel.create(chapters)).map((chapter) => chapter._id);
+    return chaptersID;
 }
 
 async function getChapterImages(url) {
@@ -115,4 +126,5 @@ module.exports = {
     getChapterImages,
     downloadImage,
     createInputMediaPhoto,
+    createAndGetChaptersID,
 };

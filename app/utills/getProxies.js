@@ -1,7 +1,9 @@
 const ProxyLists = require("proxy-lists");
 
 const options = {
-    countries: ["us", "ca"],
+    protocols: ["http"],
+    countries: ["ca", "ru", "de"],
+    anonymityLevels: ["elite"],
 };
 
 // `gettingProxies` is an event emitter object. 
@@ -9,6 +11,7 @@ const gettingProxies = ProxyLists.getProxies(options);
 
 gettingProxies.on("data", function(proxies) {
     // Received some proxies. 
+    console.log(proxies);
 });
 
 gettingProxies.on("error", function(error) {

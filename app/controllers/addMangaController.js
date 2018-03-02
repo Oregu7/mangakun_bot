@@ -19,7 +19,7 @@ module.exports = async(ctx) => {
     const mangaExist = await MangaModel.findOne({ url: `${baseUrl}/${mangaName}` });
     if (mangaExist) return sendManga(ctx, mangaExist);
     // парсим данные с сайта
-    ctx.reply("Подготавливаем мангу для скачивания, нужно немного подождать (◕‿◕)");
+    ctx.reply("Подготавливаю мангу для скачивания, нужно немного подождать (◕‿◕)");
     try {
         const mangaData = await getManga(`${baseUrl}/${mangaName}`);
         const manga = await MangaModel.create(mangaData);

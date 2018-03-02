@@ -1,9 +1,9 @@
-const startController = require("./start-controller");
-const inlineQueryController = require("./inlinequery-controller");
-const addMangaController = require("./addManga-controller");
-const addMangaCommandController = require("./addMangaCommand-controller");
-const searchController = require("./search-controller");
-const getChaptersController = require("./getChapters-controller");
+const startController = require("./startController");
+const inlineQueryController = require("./inlinequeryController");
+const addMangaController = require("./addMangaController");
+const addMangaCommandController = require("./addMangaCommandController");
+const searchController = require("./searchController");
+const getChaptersController = require("./getChaptersController");
 const callbackController = require("./callbackController");
 
 module.exports = {
