@@ -2,9 +2,13 @@ const Router = require("telegraf/router");
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const MangaModel = require("../models/manga");
+const ChapterModel = require("../models/chapter");
 const compileMessage = require("../helpers/compileMessage");
+const Pagination = require("../helpers/pagination");
 const mangaManager = require("../helpers/mangaManager");
 const { createInputMediaPhoto, getChapterImages } = require("../utills/scraper");
+
+const pagination = new Pagination("ch_page");
 
 const callback = new Router(({ callbackQuery }) => {
     if (!callbackQuery.data) { return; }
@@ -46,12 +50,22 @@ callback.on("gl_chapter", async(ctx) => {
     }
 });
 
-callback.on("chapters", async(ctx) => {
-    const manga = await MangaModel.findByIdAndPopulateChapters(ctx.state.payload);
-    const message = manga.chapters.map((chapter, indx) =>
+callback.on("ch_page", async(ctx) => {
+    const [page, mangaID] = ctx.state.payload.split(";");
+    const chapters = await ChapterModel.paginate({ manga_id: mangaID }, {
+        sort: { number: -1 },
+        page: Number(page),
+        limit: 30,
+        select: "-imagesURL -imagesID -manga_id",
+    });
+
+    const message = chapters.docs.map((chapter, indx) =>
         `${indx + 1}) <a href = "${chapter.url}">${chapter.title}</a>`
     ).join("\n");
-    const keyboard = Markup.inlineKeyboard([Markup.callbackButton("\u{1F519}НАЗАД", `back:${manga.id}`)]);
+
+    const keyboard = Markup.inlineKeyboard([
+        pagination.generatePages(mangaID, chapters.page, chapters.pages), [Markup.callbackButton("\u{1F519}НАЗАД", `back:${mangaID}`)],
+    ]);
     ctx.editMessageText(message, Extra.HTML().webPreview(false).markup(keyboard));
 });
 

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -11,8 +10,13 @@ const MangaSchema = mongoose.Schema({
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
     genres: [String],
-    chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
     subscribers: [{ type: Number, index: true }],
+});
+
+MangaSchema.virtual("chapters", {
+    ref: "Chapter",
+    localField: "_id",
+    foreignField: "manga_id",
 });
 
 MangaSchema.statics.getManga = function(query = {}) {
