@@ -80,6 +80,10 @@ class Pagination {
         return pagesInlineKeyboard;
     }
 
+    createBackButton(action, token) {
+        return Markup.callbackButton("\u{1F519}НАЗАД", `${action}:${token}`);
+    }
+
 }
 
 

@@ -2,6 +2,7 @@
 require("dotenv").config();
 // загружаем компоненты
 const mongo = require("./components/mongo");
+const constants = require("./components/constants");
 // необходимые переменные окружения
 const REQUIRED_VARIABLES = [
     "NODE_ENV",
@@ -28,6 +29,7 @@ const config = {
     bot: {
         token: process.env.BOT_TOKEN,
     },
+    constants,
 };
 
 module.exports = config;

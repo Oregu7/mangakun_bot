@@ -2,8 +2,9 @@ const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const ChapterModel = require("../../models/chapter");
 const Pagination = require("../../helpers/pagination");
+const { BackToMangaAction, MangaPaginationAction } = require("config").get("constants");
 
-const pagination = new Pagination("ch_page");
+const pagination = new Pagination(MangaPaginationAction);
 
 module.exports = async(ctx) => {
     const [page, mangaID] = ctx.state.payload.split(";");
@@ -19,7 +20,7 @@ module.exports = async(ctx) => {
     ).join("\n");
 
     const keyboard = Markup.inlineKeyboard([
-        pagination.generatePages(mangaID, chapters.page, chapters.pages), [Markup.callbackButton("\u{1F519}НАЗАД", `back:${mangaID}`)],
+        pagination.createPagesInlineKeyboard(mangaID, chapters.page, chapters.pages), [pagination.createBackButton(BackToMangaAction, mangaID)],
     ]);
     ctx.editMessageText(message, Extra.HTML().webPreview(false).markup(keyboard));
 };

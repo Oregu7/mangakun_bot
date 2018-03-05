@@ -1,6 +1,7 @@
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const escape = require("escape-html");
+const { SubscribeMangaUpdatesAction, MangaPaginationAction } = require("config").get("constants");
 const compileMessage = require("./compileMessage");
 
 const getMessage = (manga) => {
@@ -23,10 +24,10 @@ const getMessage = (manga) => {
 const getKeyboard = (manga) => {
     const keyboard = Markup.inlineKeyboard([
         [
-            Markup.callbackButton("\u{1F4EE}Подписаться", `sub:${manga.id}`),
+            Markup.callbackButton("\u{1F4EE}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.id}`),
             Markup.urlButton("\u{1F4D6}Читать", manga.url),
         ],
-        [Markup.callbackButton("К СПИСКУ ГЛАВ\u{27A1}", `ch_page:1;${manga.id}`)],
+        [Markup.callbackButton("К СПИСКУ ГЛАВ\u{27A1}", `${MangaPaginationAction}:1;${manga.id}`)],
         [Markup.switchToCurrentChatButton("\u{1F50D}Продолжить поиск...", "")],
     ]);
     return keyboard;
