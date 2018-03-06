@@ -4,7 +4,7 @@
     "description": "",
     "main": "main.js",
     "scripts": {
-        "dev": "nodemon ./main.js"
+        "dev": "nodemon ./main.js --ignore session_db.json"
     },
     "author": "baamz",
     "license": "ISC",
@@ -25,10 +25,13 @@
         "rand-token": "^0.4.0",
         "request": "^2.83.0",
         "request-promise": "^4.2.2",
+        "shortid": "^2.2.8",
         "slimerjs": "^0.10.3",
         "telbot": "^0.1.23",
         "telegraf": "^3.18.0",
-        "thread-sleep": "^2.0.0"
+        "telegraf-session-local": "0.0.4",
+        "thread-sleep": "^2.0.0",
+        "validator": "^9.4.1"
     },
     "devDependencies": {
         "babel-eslint": "^8.2.1",

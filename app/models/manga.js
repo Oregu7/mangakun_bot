@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const shortid = require("shortid");
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -10,7 +11,12 @@ const MangaSchema = mongoose.Schema({
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
     genres: [String],
-    subscribers: [{ type: Number, index: true }],
+    publicId: {
+        type: String,
+        unique: true,
+        default: shortid.generate,
+    },
+    subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 MangaSchema.virtual("chapters", {
@@ -34,13 +40,14 @@ MangaSchema.statics.searchManga = function(text) {
         .limit(30);
 };
 
-MangaSchema.statics.findByIdAndPopulateChapters = function(id) {
-    return this.findById(id)
-        .select("-subscribers")
+MangaSchema.statics.checkSubscribe = function(userId, publicId) {
+    return this.findOne({ publicId })
+        .select("subscribers name url")
         .populate({
-            path: "chapters",
-            select: "title url",
-            options: { sort: { number: -1 }, limit: 30 },
+            path: "subscribers",
+            match: { _id: userId },
+            limit: 1,
+            select: "username",
         });
 };
 

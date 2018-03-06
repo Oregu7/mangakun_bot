@@ -1,14 +1,11 @@
-const Router = require("telegraf/router");
 const Extra = require("telegraf/extra");
 const compileMessage = require("../helpers/compileMessage");
+const { sendManga } = require("../helpers/mangaManager");
 const addMangaCommandController = require("./addMangaCommandController");
+const UserModel = require("../models/user");
+const MangaModel = require("../models/manga");
 
-const startRouter = new Router((ctx) => {
-    const parts = ctx.message.text.split(" ");
-    return { route: parts[1] || "/" };
-});
-
-startRouter.on("/", (ctx) => {
+async function startCommand(ctx) {
     const message = `<b>Mangakun Bot - </b> это бот, который будет оповещать
     о выходе Вашей любимой <b>манги</b>.
     
@@ -26,10 +23,33 @@ startRouter.on("/", (ctx) => {
     /rate - оценить бот`;
 
     return ctx.reply(compileMessage(message), Extra.HTML());
-});
+}
 
-startRouter.on("add_manga", addMangaCommandController);
+async function otherwise(ctx, data) {
+    let manga = await MangaModel.getManga({ publicId: data });
+    if (manga) return sendManga(ctx, manga);
 
-startRouter.otherwise((ctx) => ctx.reply("O_o"));
+    return ctx.reply("O_o");
+}
 
-module.exports = startRouter;
+module.exports = async(ctx) => {
+    const parts = ctx.message.text.split(" ");
+    const route = parts[1] || "/";
+
+    if (!ctx.session.hasOwnProperty("authToken")) {
+        let user = await UserModel.createByContext(ctx);
+        console.log(`[ new client ] => ${user.username}:${user.userId}`);
+        ctx.session.authToken = user._id;
+    }
+
+    switch (route) {
+        case "/":
+            startCommand(ctx);
+            break;
+        case "add_manga":
+            addMangaCommandController(ctx);
+            break;
+        default:
+            otherwise(ctx, route);
+    }
+};

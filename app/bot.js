@@ -1,17 +1,21 @@
 const config = require("config");
 const Telegraf = require("telegraf");
+const LocalSession = require("telegraf-session-local");
 const controllers = require("./controllers");
 
 const token = config.get("bot.token");
 const bot = new Telegraf(token);
 
+// middlewares
+bot.use((new LocalSession({ database: "session_db.json" })).middleware());
+// commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
 bot.command("addmanga", controllers.addMangaCommandController);
 bot.command("test", controllers.getChaptersController);
-
+// patterns
 bot.hears(/(http:\/\/)?(www\.)?readmanga\.me\/(\w+)\/?.*/i, controllers.addMangaController);
-
+// events
 bot.on("inline_query", controllers.inlineQueryController);
 bot.on("callback_query", controllers.callbackController);
 bot.on("text", (ctx) => {

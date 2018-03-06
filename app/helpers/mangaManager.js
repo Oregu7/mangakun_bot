@@ -24,7 +24,7 @@ const getMessage = (manga) => {
 const getKeyboard = (manga) => {
     const keyboard = Markup.inlineKeyboard([
         [
-            Markup.callbackButton("\u{1F4EE}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.id}`),
+            Markup.callbackButton("\u{1F4EE}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.publicId}`),
             Markup.urlButton("\u{1F4D6}Читать", manga.url),
         ],
         [Markup.callbackButton("К СПИСКУ ГЛАВ\u{27A1}", `${MangaPaginationAction}:1;${manga.id}`)],

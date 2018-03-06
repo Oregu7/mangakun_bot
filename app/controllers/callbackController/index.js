@@ -2,7 +2,14 @@ const Router = require("telegraf/router");
 const backToMangaAction = require("./backToMangaAction");
 const downloadChapterAction = require("./downloadChapterAction");
 const mangaPaginationAction = require("./mangaPaginationAction");
-const { BackToMangaAction, MangaPaginationAction, DownloadChapterAction } = require("config").get("constants");
+const subscribeMangaUpdatesAction = require("./subscribeMangaUpdatesAction");
+
+const {
+    BackToMangaAction,
+    MangaPaginationAction,
+    DownloadChapterAction,
+    SubscribeMangaUpdatesAction,
+} = require("config").get("constants");
 
 const callback = new Router(({ callbackQuery }) => {
     if (!callbackQuery.data) { return; }
@@ -17,5 +24,6 @@ const callback = new Router(({ callbackQuery }) => {
 callback.on(DownloadChapterAction, downloadChapterAction);
 callback.on(MangaPaginationAction, mangaPaginationAction);
 callback.on(BackToMangaAction, backToMangaAction);
+callback.on(SubscribeMangaUpdatesAction, subscribeMangaUpdatesAction);
 
 module.exports = callback;
