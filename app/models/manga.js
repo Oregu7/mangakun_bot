@@ -16,7 +16,10 @@ const MangaSchema = mongoose.Schema({
         unique: true,
         default: shortid.generate,
     },
-    subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    subscribers: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        date: { type: Date, default: Date.now },
+    }],
 });
 
 MangaSchema.virtual("chapters", {
@@ -44,11 +47,17 @@ MangaSchema.statics.checkSubscribe = function(userId, publicId) {
     return this.findOne({ publicId })
         .select("subscribers name url")
         .populate({
-            path: "subscribers",
+            path: "subscribers.user",
             match: { _id: userId },
             limit: 1,
             select: "username",
         });
+};
+
+MangaSchema.statics.getUserSubscribes = function(userId) {
+    return this.find({ "subscribers.user": userId })
+        .sort("-subscribers.date")
+        .select("name title url publicId description genres");
 };
 
 module.exports = mongoose.model("Manga", MangaSchema);
