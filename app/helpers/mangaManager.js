@@ -2,6 +2,8 @@ const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const escape = require("escape-html");
 const { SubscribeMangaUpdatesAction, MangaPaginationAction } = require("config").get("constants");
+const feedparser = require("../utills/feedparser");
+const ChapterModel = require("../models/chapter");
 const compileMessage = require("./compileMessage");
 
 const getMessage = (manga) => {
@@ -40,8 +42,19 @@ const sendManga = (ctx, manga) => {
     return ctx.reply(message, Extra.HTML().markup(keyboard));
 };
 
+async function createChapters(rss, mangaId) {
+    const chapters = (await feedparser(rss, { date: true })).reverse().map((chapter, indx) => {
+        chapter.number = indx + 1;
+        chapter.manga_id = mangaId;
+        return chapter;
+    });
+    if (!chapters || chapters.length == 0) return [];
+    return ChapterModel.create(chapters);
+}
+
 module.exports = {
     getMessage,
     getKeyboard,
     sendManga,
+    createChapters,
 };

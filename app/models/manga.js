@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const shortid = require("shortid");
+const mongoosePaginate = require("mongoose-paginate");
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -22,16 +23,20 @@ const MangaSchema = mongoose.Schema({
     }],
 });
 
+MangaSchema.plugin(mongoosePaginate);
+
 MangaSchema.virtual("chapters", {
     ref: "Chapter",
     localField: "_id",
     foreignField: "manga_id",
 });
 
-MangaSchema.statics.getManga = function(query = {}) {
-    return this.findOne(query)
+MangaSchema.statics.getManga = async function(query = {}) {
+    const [manga = null] = await this.find(query)
         .select("-chapters -subscribers")
-        .sort("-popularity");
+        .sort("-popularity")
+        .limit(1);
+    return manga;
 };
 
 MangaSchema.statics.searchManga = function(text) {
@@ -54,10 +59,13 @@ MangaSchema.statics.checkSubscribe = function(userId, publicId) {
         });
 };
 
-MangaSchema.statics.getUserSubscribes = function(userId) {
-    return this.find({ "subscribers.user": userId })
-        .sort("-subscribers.date")
-        .select("name title url publicId description genres");
+MangaSchema.statics.getUserSubscribes = function(userId, page = 1, limit = 10) {
+    return this.paginate({ "subscribers.user": userId }, {
+        sort: "-subscribers.date",
+        select: "name title url publicId",
+        page,
+        limit,
+    });
 };
 
 module.exports = mongoose.model("Manga", MangaSchema);

@@ -1,6 +1,6 @@
 const MangaModel = require("../models/manga");
 const { getManga } = require("../utills/scraper");
-const { sendManga } = require("../helpers/mangaManager");
+const { sendManga, createChapters } = require("../helpers/mangaManager");
 
 const baseUrl = "http://readmanga.me";
 
@@ -15,6 +15,7 @@ module.exports = async(ctx) => {
     try {
         const mangaData = await getManga(`${baseUrl}/${mangaName}`);
         const manga = await MangaModel.create(mangaData);
+        await createChapters(manga.rss, manga._id);
         return sendManga(ctx, manga);
     } catch (err) {
         ctx.reply(`Похоже манги - [${mangaName}], не существует (╥_╥)`);

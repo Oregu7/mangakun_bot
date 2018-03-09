@@ -47,7 +47,6 @@ async function getManga(link, site = "http://readmanga.me") {
     const rss = manga.find(".manga-actions").children("a").eq(1).attr("href");
     // проверяем существование rss ленты и достаем главы
     if (!rss) throw new Error(`rss feed is not exist by url [${link}]`);
-    const chapters = await createAndGetChaptersID(site + rss);
     return {
         title,
         name,
@@ -56,7 +55,6 @@ async function getManga(link, site = "http://readmanga.me") {
         image,
         genres,
         rss: site + rss,
-        chapters,
         popularity,
         thumb,
     };
