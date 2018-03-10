@@ -4,6 +4,7 @@ require("dotenv").config();
 const mongo = require("./components/mongo");
 const constants = require("./components/constants");
 const lowdb = require("./components/lowdb");
+const rss = require("./components/rss");
 // необходимые переменные окружения
 const REQUIRED_VARIABLES = [
     "NODE_ENV",
@@ -32,6 +33,7 @@ const config = {
     },
     localSession: lowdb,
     constants,
+    rss,
 };
 
 module.exports = config;

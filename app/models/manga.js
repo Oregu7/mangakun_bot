@@ -29,12 +29,29 @@ MangaSchema.virtual("chapters", {
     ref: "Chapter",
     localField: "_id",
     foreignField: "manga_id",
+    // justOne: true,
 });
 
 MangaSchema.statics.getManga = async function(query = {}) {
     const [manga = null] = await this.find(query)
         .select("-chapters -subscribers")
         .sort("-popularity")
+        .limit(1);
+    return manga;
+};
+
+MangaSchema.statics.getMangaAndLastChapter = async function(query = {}) {
+    const [manga = null] = await this.find(query)
+        .select("-subscribers")
+        .sort("-popularity")
+        .populate({
+            path: "chapters",
+            options: {
+                limit: 1,
+                sort: { number: -1 },
+                select: "number url title",
+            },
+        })
         .limit(1);
     return manga;
 };

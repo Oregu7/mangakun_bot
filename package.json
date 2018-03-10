@@ -4,7 +4,8 @@
     "description": "",
     "main": "main.js",
     "scripts": {
-        "dev": "nodemon ./main.js --ignore session_db.json"
+        "dev": "nodemon ./main.js --ignore session_db.json",
+        "uptest": "node ./app/utills/mangaUpdatesListener.js"
     },
     "author": "baamz",
     "license": "ISC",
