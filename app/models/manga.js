@@ -7,7 +7,7 @@ const MangaSchema = mongoose.Schema({
     title: { type: String, required: true },
     url: { type: String, required: true, unique: true },
     popularity: { type: Number, required: true, index: true },
-    rss: { type: String, required: true, unique: true },
+    rss: { type: String, required: true },
     image: { type: String, required: true },
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
@@ -25,42 +25,37 @@ const MangaSchema = mongoose.Schema({
 
 MangaSchema.plugin(mongoosePaginate);
 
-MangaSchema.virtual("chapters", {
+MangaSchema.virtual("lastChapter", {
     ref: "Chapter",
     localField: "_id",
     foreignField: "manga_id",
-    // justOne: true,
+    justOne: true,
+    options: {
+        select: "number url title",
+        sort: "-number",
+    },
 });
 
 MangaSchema.statics.getManga = async function(query = {}) {
     const [manga = null] = await this.find(query)
-        .select("-chapters -subscribers")
+        .select("-lastChapter -subscribers")
         .sort("-popularity")
         .limit(1);
     return manga;
 };
 
-MangaSchema.statics.getMangaAndLastChapter = async function(query = {}) {
-    const [manga = null] = await this.find(query)
+MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
+    return this.find(query)
         .select("-subscribers")
-        .sort("-popularity")
-        .populate({
-            path: "chapters",
-            options: {
-                limit: 1,
-                sort: { number: -1 },
-                select: "number url title",
-            },
-        })
-        .limit(1);
-    return manga;
+        .populate("lastChapter")
+        .limit(mangaLimit);
 };
 
 MangaSchema.statics.searchManga = function(text) {
     const pattern = new RegExp(text, "i");
     return this
         .find({ $or: [{ name: pattern }, { title: pattern }] })
-        .select("-chapters -subscribers")
+        .select("-lastChapter -subscribers")
         .sort("-popularity")
         .limit(30);
 };

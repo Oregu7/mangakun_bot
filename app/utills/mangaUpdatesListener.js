@@ -10,27 +10,7 @@ const { getManga } = require("./scraper");
 
 const { ReadMangaRSS } = config.get("rss");
 
-async function listener(rss) {
-    const chapters = (await feedparser(rss.feed, { date: true })).slice(5).map((chapter) => {
-        let [, manga] = chapter.url.match(rss.match);
-        chapter.manga = manga;
-        return chapter;
-    });
-
-    // достаем из базы предыдущие главы
-    const oldChapters = storage.get(rss.site) || [];
-    // получаем новые обновления
-    let updates = getUpdates(oldChapters, chapters);
-    if (updates) {
-        let group = groupByManga(updates);
-        for (let item of group) {
-            let ok = await updateData(item);
-            console.log(ok);
-        }
-        // storage.set(rss.site, hashUpdates(chapters));
-    }
-}
-
+// получаем список обновлений
 function getUpdates(oldUpdates, newUpdates) {
     //создаем set из старых данных
     let oldUpdatesSet = new Set(oldUpdates);
@@ -44,7 +24,7 @@ function getUpdates(oldUpdates, newUpdates) {
 
     return currentUpdates.length ? currentUpdates : null;
 }
-
+// группируем главы по url-манги
 function groupByManga(chapters) {
     return _.chain(chapters)
         .groupBy("manga")
@@ -52,19 +32,23 @@ function groupByManga(chapters) {
         .map(function(pair) { return _.zipObject(["Manga", "Chapters"], pair); })
         .value();
 }
-
+// преобразуем список обновлением в список хэшей url-ов(т.к они не изменны).
 function hashUpdates(data) {
-    //преобразуем список обновлением в список хэшей url-ов(т.к они не изменны).
     return data.map((item) => hash.MD5(item.url));
 }
 
-async function updateData(item) {
-    let manga = await MangaModel.getMangaAndLastChapter({ url: item.Manga });
-    if (manga) {
-        var {
-            _id: manga_id,
-            chapters: [{ number = 0 } = {}],
-        } = manga;
+// формируем объект с ключами property
+function compileMangaByProeprty(mangaList, property) {
+    return mangaList.map((manga) => ({
+        [manga[property]]: manga,
+    })).reduce((data, val) => Object.assign(data, val), {});
+}
+
+// формируем список глав
+function compileChapters(group) {
+    return group.map((item) => {
+        let { _id: manga_id, lastChapter } = item.Manga;
+        let number = lastChapter ? lastChapter.number : 0;
 
         return item.Chapters.map((chapter) => {
             number++;
@@ -77,9 +61,59 @@ async function updateData(item) {
                 pubdate,
             };
         });
+    }).reduce((data, val) => [...data, ...val], []);
+}
+
+async function filterAndCompareResult(rss, group, mangaList) {
+    // формируем map существующией манги типа { url: manga }  
+    mangaList = compileMangaByProeprty(mangaList, "url");
+    // обновляем данные манги в объекте group
+    for (let item of group) {
+        if (mangaList.hasOwnProperty(item.Manga)) {
+            item.Manga = mangaList[item.Manga];
+            continue;
+        }
+
+        let mangaData = await getManga(item.Manga, rss.site);
+        let manga = await MangaModel.create(mangaData);
+        console.log(manga);
+        item.Manga = manga;
     }
 
-    return null;
+
+    return group;
+}
+
+// достаем новые главы из rss-ленты
+async function getChapters(rss) {
+    const chapters = (await feedparser(rss.feed, { date: true })).slice(5).map((chapter) => {
+        let [, site, manga] = chapter.url.match(rss.match);
+        // вся манга, кроме collection
+        if (manga == "collection") return null;
+        chapter.manga = site + manga;
+        return chapter;
+    });
+
+    // удаляем все пустые элементы (undefined, null)
+    return _.compact(chapters);
+}
+
+async function listener(rss) {
+    const newChapters = await getChapters(rss);
+    // достаем из базы предыдущие главы
+    const oldChapters = storage.get(rss.site) || [];
+    // получаем новые обновления
+    let updates = getUpdates(oldChapters, newChapters);
+    if (updates) {
+        let group = groupByManga(updates);
+        let mangaList = await MangaModel.getMangaAndLastChapter({
+            url: { $in: group.map((item) => item.Manga) },
+        }, group.length);
+        let res = await filterAndCompareResult(rss, group, mangaList);
+        let chapters = compileChapters(res);
+        console.log(chapters);
+        //storage.set(rss.site, hashUpdates(newChapters));
+    }
 }
 
 listener(ReadMangaRSS);
