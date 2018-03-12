@@ -1,5 +1,6 @@
 const config = require("config");
 const Telegraf = require("telegraf");
+const { fork } = require("child_process");
 const controllers = require("./controllers");
 
 const token = config.get("bot.token");
@@ -26,6 +27,14 @@ bot.on("text", (ctx) => {
 });
 bot.catch((err) => {
     console.error(err);
+});
+
+const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
+childProcess.on("message", (data) => {
+    for (let item of data) {
+        let { message, users } = item;
+        bot.telegram.sendMessage(users[0], message, Telegraf.Extra.HTML().webPreview(false));
+    }
 });
 
 module.exports = bot;

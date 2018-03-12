@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const shortid = require("shortid");
 const mongoosePaginate = require("mongoose-paginate");
+const UserModel = require("./user");
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -46,8 +47,11 @@ MangaSchema.statics.getManga = async function(query = {}) {
 
 MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
     return this.find(query)
-        .select("-subscribers")
         .populate("lastChapter")
+        .populate({
+            path: "subscribers.user",
+            select: "userId",
+        })
         .limit(mangaLimit);
 };
 
