@@ -135,11 +135,11 @@ async function listener(rss) {
         }, group.length);
         let res = await filterAndCompareResult(rss, group, mangaList);
         let createdChapters = await ChapterModel.create(compileChapters(res));
-
+        console.log(createdChapters);
         let notify = createNotifyUsers(res);
         process.send(notify);
         storage.set(rss.site, hashUpdates(newChapters));
     }
 }
 
-listener(ReadMangaRSS);
+setInterval(listener, 1000 * 15 * 60, ReadMangaRSS);

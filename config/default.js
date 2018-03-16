@@ -3,7 +3,6 @@ require("dotenv").config();
 // загружаем компоненты
 const mongo = require("./components/mongo");
 const constants = require("./components/constants");
-const lowdb = require("./components/lowdb");
 const rss = require("./components/rss");
 // необходимые переменные окружения
 const REQUIRED_VARIABLES = [
@@ -31,7 +30,6 @@ const config = {
     bot: {
         token: process.env.BOT_TOKEN,
     },
-    localSession: lowdb,
     constants,
     rss,
 };

@@ -1,6 +1,6 @@
 const escape = require("escape-html");
 const MangaModel = require("../../models/manga");
-const localSession = require("config").get("localSession");
+const localSession = require("../../utills/localSession");
 
 module.exports = async(ctx) => {
     // проверяем начал ли user диалог с ботом (/start)

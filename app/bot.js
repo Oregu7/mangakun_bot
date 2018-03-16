@@ -2,9 +2,9 @@ const config = require("config");
 const Telegraf = require("telegraf");
 const { fork } = require("child_process");
 const controllers = require("./controllers");
+const localSession = require("./utills/localSession");
 
 const token = config.get("bot.token");
-const localSession = config.get("localSession");
 const bot = new Telegraf(token);
 
 // middlewares
