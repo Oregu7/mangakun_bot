@@ -27,6 +27,8 @@ class Pagination {
 
     createPagesInlineKeyboard(token, currentPage, countPages) {
         const factor = 4;
+        // приводим к типу Number
+        currentPage = Number(currentPage);
         let pagesInlineKeyboard = [];
         if (countPages > 1) {
             let startButton = this[_createPageInlineButton](token, 1, "\u{00AB} 1");
@@ -73,7 +75,7 @@ class Pagination {
                     ];
                 }
             } else {
-                pagesInlineKeyboard = this[_generatePagesInlineKeyboard](token, 1, countPages);
+                pagesInlineKeyboard = this[_generatePagesInlineKeyboard](token, 1, countPages, currentPage);
             }
         }
 
