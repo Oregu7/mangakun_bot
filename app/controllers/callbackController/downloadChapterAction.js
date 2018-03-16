@@ -9,8 +9,8 @@ function filterSize(image) {
 }
 
 module.exports = async(ctx) => {
-    const manga = await MangaModel.findById(ctx.state.payload);
-    const { url } = manga.chapters[0];
+    const manga = await MangaModel.findById(ctx.state.payload).populate("lastChapter");
+    const { url } = manga.lastChapter;
     const userID = ctx.update.callback_query.from.id;
     ctx.answerCbQuery("Подготавливаю мангу для скачивания...", true);
     const images = await getChapterImages(url);

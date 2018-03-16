@@ -96,11 +96,11 @@ function createNotifyUsers(result) {
     return data.map(({ Manga, Chapters }) => {
         let { name, title, publicId, subscribers } = Manga;
         let chapters = Chapters.map((chapter, indx) => compileMessage(`${indx + 1}) ${chapter.title}
-        Читать: <a href="${chapter.url}">ссылка</a>
-        Скачать: /manga${publicId}_${chapter.number}
+        \u{1F4D9}Читать: <a href="${chapter.url}">ссылка</a>
+        \u{23EC}Скачать: /download_${publicId}_${chapter.number}
         `)).join("\n");
-        let message = `<b>${name}</b>\n<i>${title}</i>\n\n<b>Обновления:</b>\n${chapters}`;
-
+        let footer = `${"\u{2796}".repeat(11)}\nПодробнее: /manga_${publicId}\nОтписаться: /unsub_${publicId}`;
+        let message = `<b>${name}</b>\n<i>${title}</i>\n\n\u{2795}<b>Обновления:</b>\n${chapters}\n${footer}`;
         return {
             message,
             users: subscribers.map(({ user }) => user.userId),
@@ -134,12 +134,16 @@ async function listener(rss) {
             url: { $in: group.map((item) => item.Manga) },
         }, group.length);
         let res = await filterAndCompareResult(rss, group, mangaList);
-        let createdChapters = await ChapterModel.create(compileChapters(res));
-        console.log(createdChapters);
+        try {
+            let createdChapters = await ChapterModel.insertMany(compileChapters(res), { ordered: false });
+            console.log(createdChapters);
+        } catch (err) {
+            console.error(err);
+        }
         let notify = createNotifyUsers(res);
         process.send(notify);
         storage.set(rss.site, hashUpdates(newChapters));
     }
 }
 
-setInterval(listener, 1000 * 15 * 60, ReadMangaRSS);
+setInterval(listener, 1000 * 10 * 60, ReadMangaRSS);

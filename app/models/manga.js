@@ -12,12 +12,12 @@ const MangaSchema = mongoose.Schema({
     image: { type: String, required: true },
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
-    genres: [String],
     publicId: {
         type: String,
         unique: true,
         default: shortid.generate,
     },
+    genres: [String],
     subscribers: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: Date, default: Date.now },
@@ -55,24 +55,24 @@ MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
         .limit(mangaLimit);
 };
 
-MangaSchema.statics.searchManga = function(text) {
+MangaSchema.statics.searchManga = function(text, limit = 25) {
     const pattern = new RegExp(text, "i");
     return this
         .find({ $or: [{ name: pattern }, { title: pattern }] })
         .select("-lastChapter -subscribers")
         .sort("-popularity")
-        .limit(30);
+        .limit(limit);
 };
 
 MangaSchema.statics.checkSubscribe = function(userId, publicId) {
     return this.findOne({ publicId })
-        .select("subscribers name url")
-        .populate({
-            path: "subscribers.user",
-            match: { _id: userId },
-            limit: 1,
-            select: "username",
+        //.select("subscribers name url")
+        .select({
+            name: 1,
+            url: 1,
+            subscribers: { $elemMatch: { user: userId } },
         });
+    //.where("subscribers.user", { $elemMatch: userId });
 };
 
 MangaSchema.statics.getUserSubscribes = function(userId, page = 1, limit = 10) {

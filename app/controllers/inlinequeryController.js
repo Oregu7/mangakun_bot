@@ -5,7 +5,7 @@ const mangaManager = require("../helpers/mangaManager");
 
 module.exports = async(ctx) => {
     try {
-        const mangaList = await MangaModel.searchManga(ctx.inlineQuery.query);
+        const mangaList = await MangaModel.searchManga(ctx.inlineQuery.query, 27);
         const results = mangaList.map((manga) => ({
             id: uid(11),
             type: "article",

@@ -17,6 +17,8 @@ bot.command("mymanga", controllers.mymangaController);
 bot.command("test", controllers.getChaptersController);
 // patterns
 bot.hears(/(http:\/\/)?(www\.)?readmanga\.me\/(\w+)\/?.*/i, controllers.addMangaController);
+bot.hears(/\/manga_([\w\d]+)/i, controllers.mangaInfoController);
+bot.hears(/\/unsub_([\w\d]+)/i, controllers.unsubMangaController);
 // events
 bot.on("inline_query", controllers.inlineQueryController);
 bot.on("callback_query", controllers.callbackController);
@@ -29,12 +31,12 @@ bot.catch((err) => {
     console.error(err);
 });
 
-const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
+/*const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
 childProcess.on("message", (data) => {
     for (let item of data) {
         let { message, users } = item;
         bot.telegram.sendMessage(users[0], message, Telegraf.Extra.HTML().webPreview(false));
     }
-});
+});*/
 
 module.exports = bot;

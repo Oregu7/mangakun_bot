@@ -3,6 +3,7 @@ const backToMangaAction = require("./backToMangaAction");
 const downloadChapterAction = require("./downloadChapterAction");
 const mangaPaginationAction = require("./mangaPaginationAction");
 const subscribeMangaUpdatesAction = require("./subscribeMangaUpdatesAction");
+const myMangaPageAction = require("./myMangaPageAction");
 
 const {
     BackToMangaAction,
@@ -25,5 +26,6 @@ callback.on(DownloadChapterAction, downloadChapterAction);
 callback.on(MangaPaginationAction, mangaPaginationAction);
 callback.on(BackToMangaAction, backToMangaAction);
 callback.on(SubscribeMangaUpdatesAction, subscribeMangaUpdatesAction);
+callback.on("mymanga_page", myMangaPageAction);
 
 module.exports = callback;

@@ -4,7 +4,6 @@ const localSession = require("../../utills/localSession");
 
 module.exports = async(ctx) => {
     // проверяем начал ли user диалог с ботом (/start)
-    getAuthToken(ctx);
     const publicId = ctx.state.payload;
     const userId = ctx.session.authToken || getAuthToken(ctx);
     if (!userId) {
@@ -16,8 +15,7 @@ module.exports = async(ctx) => {
     const manga = await MangaModel.checkSubscribe(userId, publicId);
     if (manga.subscribers.length) return ctx.answerCbQuery("Вы уже подписаны на эту мангу!", true);
     // подписываемся на обновления
-    manga.subscribers.push({ user: userId });
-    let ok = await manga.save();
+    await MangaModel.update({ _id: manga._id }, { $push: { subscribers: { user: userId } } });
     return ctx.answerCbQuery(`Вы подписались на мангу - [${escape(manga.name)}]!`, true);
 };
 
