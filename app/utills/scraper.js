@@ -106,16 +106,26 @@ function downloadImage(chapterURL, src) {
     return req;
 }
 
-function createInputMediaPhoto(chapterURL, src) {
+function createInputMediaPhotoFromStream(chapterURL, src, caption = "") {
     const req = downloadImage(chapterURL, src);
 
     return {
         type: "photo",
+        caption,
         media: {
             source: req,
         },
     };
 }
+
+function createInputMediaPhotoFromFileId(fileId, caption = "") {
+    return {
+        type: "photo",
+        caption,
+        media: fileId,
+    };
+}
+
 
 module.exports = {
     scrap,
@@ -123,6 +133,7 @@ module.exports = {
     getMangaList,
     getChapterImages,
     downloadImage,
-    createInputMediaPhoto,
+    createInputMediaPhotoFromStream,
+    createInputMediaPhotoFromFileId,
     createAndGetChaptersID,
 };

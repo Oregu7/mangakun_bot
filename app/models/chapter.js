@@ -12,7 +12,7 @@ const ChapterSchema = mongoose.Schema({
         width: { type: Number, required: true },
         height: { type: Number, required: true },
     }],
-    imagesID: [Number],
+    imagesID: [String],
 });
 
 ChapterSchema.plugin(mongoosePaginate);

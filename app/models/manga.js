@@ -32,8 +32,19 @@ MangaSchema.virtual("lastChapter", {
     foreignField: "manga_id",
     justOne: true,
     options: {
-        select: "number url title",
+        select: "number url title imagesID",
         sort: "-number",
+    },
+});
+
+MangaSchema.virtual("firstChapter", {
+    ref: "Chapter",
+    localField: "_id",
+    foreignField: "manga_id",
+    justOne: true,
+    options: {
+        select: "number url title imagesID",
+        sort: "number",
     },
 });
 
