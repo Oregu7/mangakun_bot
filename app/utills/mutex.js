@@ -1,4 +1,5 @@
 const EventEmitter = require("events").EventEmitter;
+const getUserId = require("./getUserId");
 
 const _queue = Symbol("queue");
 const _done = Symbol("done");
@@ -28,7 +29,6 @@ class Mutex extends EventEmitter {
         // добавляем данные в очередь
         this[_queue].push([ctx, ...args]);
         // оповещаем
-        this.emit("start", ctx);
         this[_broadcastNumbers]();
         // вызываем dequeue, если все очередь свободна
         if (this[_done]) this.emit("dequeue");
@@ -44,7 +44,15 @@ class Mutex extends EventEmitter {
         if (this[_queue].length && this[_done]) {
             this[_done] = false;
             let [ctx, ...args] = this[_queue].shift();
-            this[_callback](ctx, this.done.bind(this), ...args);
+            try {
+                await this[_callback](ctx, this.done.bind(this), ...args);
+            } catch (err) {
+                const userId = getUserId(ctx);
+                ctx.telegram.sendMessage(userId, "Что-то пошло не так, попробуйте позднее");
+                this.done();
+                console.error(err);
+            }
+
         }
     }
 }

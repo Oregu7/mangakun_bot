@@ -3,6 +3,7 @@ const sleep = require("thread-sleep");
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const Mutex = require("../utills/mutex");
+const getUserId = require("../utills/getUserId");
 const ChapterModel = require("../models/chapter");
 const compileMessage = require("../helpers/compileMessage");
 const {
@@ -23,11 +24,6 @@ function parseImangeIds(data = []) {
         let [{ file_id: photoId }] = item.photo.slice(-1);
         return photoId;
     });
-}
-
-function getUserId(ctx) {
-    if (ctx.message) return ctx.message.chat.id;
-    else return ctx.update.callback_query.chat.id;
 }
 
 async function downloadChapter(ctx, done, chapter) {
@@ -92,12 +88,6 @@ async function sendCachedImages(ctx, imageIds, done) {
 mutex.on("number", (ctx, number) => {
     const userID = getUserId(ctx);
     let message = `\u{26A0}Ваш <b>номер</b> в очереди : <b>${number}</b>`;
-    return ctx.telegram.sendMessage(userID, message, Extra.HTML());
-});
-
-mutex.on("start", (ctx) => {
-    const userID = getUserId(ctx);
-    let message = "Вы встали в <b>очередь</b> на скачивание \u{1F3B4}манги :)";
     return ctx.telegram.sendMessage(userID, message, Extra.HTML());
 });
 
