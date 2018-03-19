@@ -52,9 +52,10 @@ async function downloadChapter(ctx, done, chapter) {
         let start = (index - 1) * 10 + 1;
         let last = (index - 1) * 10 + pack.length;
         await ctx.telegram.sendMessage(userID, `Скачиваю страницы с ${start} по ${last}`);
-        let data = await ctx.telegram.sendMediaGroup(userID,
-            pack.map((image, indx) => createInputMediaPhotoFromStream(url, image.src, `${start + indx} из ${images.length}`))
-        );
+        let pages = await Promise.all(
+            pack.map((image, indx) =>
+                createInputMediaPhotoFromStream(url, image.src, `${start + indx} из ${images.length}`)));
+        let data = await ctx.telegram.sendMediaGroup(userID, pages);
         index++;
         imageIds.push(...parseImangeIds(data));
         sleep(3500);

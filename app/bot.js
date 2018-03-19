@@ -32,12 +32,12 @@ bot.catch((err) => {
     console.error(err);
 });
 
-/*const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
+const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
 childProcess.on("message", (data) => {
     for (let item of data) {
         let { message, users } = item;
         bot.telegram.sendMessage(users[0], message, Telegraf.Extra.HTML().webPreview(false));
     }
-});*/
+});
 
 module.exports = bot;

@@ -88,7 +88,7 @@ async function getChapterImages(url) {
 }
 
 function downloadImage(chapterURL, src) {
-    const req = request.get({
+    return rp.get({
         uri: src,
         headers: {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
@@ -101,20 +101,18 @@ function downloadImage(chapterURL, src) {
             "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36",
             "X-Compress": "null",
         },
+        encoding: null,
     });
-
-    return req;
 }
 
-function createInputMediaPhotoFromStream(chapterURL, src, caption = "") {
-    const req = downloadImage(chapterURL, src);
+async function createInputMediaPhotoFromStream(chapterURL, src, caption = "") {
+    const data = await downloadImage(chapterURL, src);
+    //req.on("error", console.error);
 
     return {
         type: "photo",
         caption,
-        media: {
-            source: req,
-        },
+        media: { source: data },
     };
 }
 
