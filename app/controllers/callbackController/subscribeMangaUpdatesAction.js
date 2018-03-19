@@ -4,15 +4,15 @@ const localSession = require("../../utills/localSession");
 
 module.exports = async(ctx) => {
     // проверяем начал ли user диалог с ботом (/start)
-    const publicId = ctx.state.payload;
+    const mangaId = Number(ctx.state.payload);
     const userId = ctx.session.authToken || getAuthToken(ctx);
     if (!userId) {
         return ctx.answerCbQuery("Чтобы подписаться на обновления, нужно начать диалог с ботом", true, {
-            url: `t.me/mangakun_bot?start=${publicId}`,
+            url: `t.me/mangakun_bot?start=${mangaId}`,
         });
     }
     // достаем мангу, подписчиков фильтруем по id-пользователя
-    const manga = await MangaModel.checkSubscribe(userId, publicId);
+    const manga = await MangaModel.checkSubscribe(userId, mangaId);
     if (manga.subscribers.length) return ctx.answerCbQuery("Вы уже подписаны на эту мангу!", true);
     // подписываемся на обновления
     await MangaModel.update({ _id: manga._id }, { $push: { subscribers: { user: userId } } });

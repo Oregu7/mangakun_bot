@@ -94,12 +94,12 @@ async function filterAndCompareResult(rss, group, mangaList) {
 function createNotifyUsers(result) {
     const data = result.filter(({ Manga }) => Manga.subscribers.length);
     return data.map(({ Manga, Chapters }) => {
-        let { name, title, publicId, subscribers } = Manga;
+        let { name, title, mangaId, subscribers } = Manga;
         let chapters = Chapters.map((chapter, indx) => compileMessage(`${indx + 1}) ${chapter.title}
         \u{1F4D9}Читать: <a href="${chapter.url}">ссылка</a>
-        \u{23EC}Скачать: /download_${publicId}_${chapter.number}
+        \u{23EC}Скачать: /download${mangaId}_${chapter.number}
         `)).join("\n");
-        let footer = `${"\u{2796}".repeat(11)}\nПодробнее: /manga_${publicId}\nОтписаться: /unsub_${publicId}`;
+        let footer = `${"\u{2796}".repeat(11)}\nПодробнее: /manga${mangaId}\nОтписаться: /unsub${mangaId}`;
         let message = `<b>${name}</b>\n<i>${title}</i>\n\n\u{2795}<b>Обновления:</b>\n${chapters}\n${footer}`;
         return {
             message,

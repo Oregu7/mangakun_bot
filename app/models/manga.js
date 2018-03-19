@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const shortid = require("shortid");
 const mongoosePaginate = require("mongoose-paginate");
+const autoIncrement = require("mongoose-auto-increment");
 const UserModel = require("./user");
 
 const MangaSchema = mongoose.Schema({
@@ -17,6 +18,7 @@ const MangaSchema = mongoose.Schema({
         unique: true,
         default: shortid.generate,
     },
+    mangaId: { type: Number, unique: true },
     genres: [String],
     subscribers: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -24,8 +26,15 @@ const MangaSchema = mongoose.Schema({
     }],
 });
 
+// подключаем плагины
 MangaSchema.plugin(mongoosePaginate);
+MangaSchema.plugin(autoIncrement.plugin, {
+    model: "Manga",
+    field: "mangaId",
+    startAt: 25005,
+});
 
+// виртуальные поля, доастем последнюю и первую главу
 MangaSchema.virtual("lastChapter", {
     ref: "Chapter",
     localField: "_id",
@@ -48,6 +57,7 @@ MangaSchema.virtual("firstChapter", {
     },
 });
 
+// статичные методы
 MangaSchema.statics.getManga = async function(query = {}) {
     const [manga = null] = await this.find(query)
         .select("-lastChapter -subscribers")
@@ -75,21 +85,19 @@ MangaSchema.statics.searchManga = function(text, limit = 25) {
         .limit(limit);
 };
 
-MangaSchema.statics.checkSubscribe = function(userId, publicId) {
-    return this.findOne({ publicId })
-        //.select("subscribers name url")
+MangaSchema.statics.checkSubscribe = function(userId, mangaId) {
+    return this.findOne({ mangaId })
         .select({
             name: 1,
             url: 1,
             subscribers: { $elemMatch: { user: userId } },
         });
-    //.where("subscribers.user", { $elemMatch: userId });
 };
 
 MangaSchema.statics.getUserSubscribes = function(userId, page = 1, limit = 10) {
     return this.paginate({ "subscribers.user": userId }, {
         sort: "-subscribers.date",
-        select: "name title url publicId",
+        select: "name title url publicId mangaId",
         page,
         limit,
     });

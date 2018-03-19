@@ -26,7 +26,7 @@ async function startCommand(ctx) {
 }
 
 async function otherwise(ctx, data) {
-    let manga = await MangaModel.getManga({ publicId: data });
+    let manga = await MangaModel.getManga({ mangaId: Number(data) });
     if (manga) return sendManga(ctx, manga);
 
     return ctx.reply("O_o");

@@ -1,4 +1,3 @@
-const randToken = require("rand-token");
 const config = require("config");
 const MangaModel = require("../models/manga");
 

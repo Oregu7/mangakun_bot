@@ -15,8 +15,8 @@ module.exports = async(ctx, page = 1, limit = 7) => {
     const message = mangaList.docs.map((manga, indx) => {
         let number = indx + 1 + factor;
         return `${number}) <b>${manga.name}</b> (<i>${manga.title}</i>)
-        Подробнее: /manga_${manga.publicId}
-        \u{1F507}Отписаться: /unsub_${manga.publicId}`;
+        Подробнее: /manga${manga.mangaId}
+        \u{1F507}Отписаться: /unsub${manga.mangaId}`;
     }).join("\n\n");
     return {
         message: compileMessage(message),

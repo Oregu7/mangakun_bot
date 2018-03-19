@@ -17,9 +17,9 @@ bot.command("mymanga", controllers.mymangaController);
 bot.command("test", controllers.getChaptersController);
 // patterns
 bot.hears(/(http:\/\/)?(www\.)?readmanga\.me\/(\w+)\/?.*/i, controllers.addMangaController);
-bot.hears(/\/manga_([\w\d]+)/i, controllers.mangaInfoController);
-bot.hears(/\/unsub_([\w\d]+)/i, controllers.unsubMangaController);
-bot.hears(/^\/download_([\w\d]+)_(\d+)$/i, controllers.downloadChapterController);
+bot.hears(/\/manga(\d+)/i, controllers.mangaInfoController);
+bot.hears(/\/unsub(\d+)/i, controllers.unsubMangaController);
+bot.hears(/^\/download(\d+)_(\d+)$/i, controllers.downloadChapterController);
 // events
 bot.on("inline_query", controllers.inlineQueryController);
 bot.on("callback_query", controllers.callbackController);

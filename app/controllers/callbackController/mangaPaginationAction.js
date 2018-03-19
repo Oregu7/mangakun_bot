@@ -14,7 +14,7 @@ module.exports = async(ctx) => {
     // получаем главы манги
     const [page, mangaID] = ctx.state.payload.split(";");
     // временно, потом для каждой главы будем сразу формировать publicId
-    const manga = await MangaModel.findById(mangaID).select("publicId");
+    const manga = await MangaModel.findById(mangaID).select("publicId mangaId");
     // достаем главы
     const chapters = await ChapterModel.paginate({ manga_id: manga._id }, {
         sort: { number: -1 },
@@ -32,7 +32,7 @@ module.exports = async(ctx) => {
         let text = `${number}) <b>${chapter.title}</b>
         <code>${moment(chapter.pubdate).format("L LT")}</code>
         \u{1F4D9}Читать: <a href="${chapter.url}">ссылка</a>
-        \u{23EC}Скачать: /download_${manga.publicId}_${chapter.number}`;
+        \u{23EC}Скачать: /download${manga.mangaId}_${chapter.number}`;
         return text;
     }).join("\n\n");
 
