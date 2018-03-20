@@ -2,3 +2,5 @@
 .env
 session_db.json
 updates.db
+webhook_pkey.pem
+webhook_cert.pem
