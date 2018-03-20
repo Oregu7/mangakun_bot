@@ -9,7 +9,7 @@ const compileMessage = require("../helpers/compileMessage");
 const feedparser = require("./feedparser");
 const { getManga } = require("./scraper");
 
-const { ReadMangaRSS } = config.get("rss");
+const { ReadMangaRSS, MintMangaRSS } = config.get("rss");
 
 // получаем список обновлений
 function getUpdates(oldUpdates, newUpdates) {
@@ -147,3 +147,4 @@ async function listener(rss) {
 }
 
 setInterval(listener, 1000 * 10 * 60, ReadMangaRSS);
+setInterval(listener, 1000 * 11 * 60, MintMangaRSS);
