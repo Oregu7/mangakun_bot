@@ -10,7 +10,7 @@ const UserSchema = mongoose.Schema({
     created_at: { type: Date, default: Date.now },
 });
 
-UserSchema.statics.createByContext = function(ctx) {
+UserSchema.statics.createByContext = async function(ctx) {
     const {
         id: userId,
         is_bot: isBot,
@@ -19,6 +19,9 @@ UserSchema.statics.createByContext = function(ctx) {
         username,
         language_code: languageCode,
     } = ctx.from;
+
+    const user = await this.findOne({ userId });
+    if (user) return user;
 
     return this.create({
         userId,
