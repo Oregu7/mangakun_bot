@@ -6,7 +6,7 @@ const mangaManager = require("../helpers/mangaManager");
 module.exports = async(ctx) => {
     try {
         const mangaList = await MangaModel.searchManga(ctx.inlineQuery.query, 27);
-        const results = mangaList.map((manga) => ({
+        const results = mangaList.map((manga) => Object.assign({}, {
             id: uid(11),
             type: "article",
             thumb_url: manga.thumb,
@@ -15,8 +15,7 @@ module.exports = async(ctx) => {
             message_text: mangaManager.getMessage(manga),
             parse_mode: "HTML",
             disable_web_page_preview: false,
-            ...mangaManager.getKeyboard(manga).extra(),
-        }));
+        }, mangaManager.getKeyboard(manga).extra()));
 
         let extra = { cache_time: 300 };
         if (!results.length) {
