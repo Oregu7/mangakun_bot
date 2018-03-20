@@ -11,6 +11,7 @@ const {
     createInputMediaPhotoFromStream,
     getChapterImages,
 } = require("../utills/scraper");
+const { MangaPaginationAction } = require("config").get("constants");
 
 const mutex = new Mutex(downloadChapter);
 
@@ -29,7 +30,7 @@ function parseImangeIds(data = []) {
 async function downloadChapter(ctx, done, chapter) {
     const { url, _id: chapterId, imagesID } = chapter;
     // отправляем кешированные картинки
-    if (imagesID.length) return sendCachedImages(ctx, imagesID, done);
+    if (imagesID.length) return sendCachedImages(ctx, chapter, done);
     const userID = getUserId(ctx);
     // достаем url's и валидируем по длине
     const images = await getChapterImages(url);
@@ -47,11 +48,11 @@ async function downloadChapter(ctx, done, chapter) {
     const packs = _.chunk(images, 10);
     let index = 1;
     let imageIds = [];
-    await ctx.telegram.sendMessage(userID, `Будет загружено ${images.length} стр.`);
+    await ctx.telegram.sendMessage(userID, `[ <b>${chapter.title}</b> ] - будет загружено <b>${images.length}</b> стр.`, Extra.HTML());
     for (let pack of packs) {
         let start = (index - 1) * 10 + 1;
         let last = (index - 1) * 10 + pack.length;
-        await ctx.telegram.sendMessage(userID, `Скачиваю страницы с ${start} по ${last}`);
+        await ctx.telegram.sendMessage(userID, `\u{23EC}Скачиваю страницы с <b>${start}</b> по <b>${last}</b>`, Extra.HTML());
         let pages = await Promise.all(
             pack.map((image, indx) =>
                 createInputMediaPhotoFromStream(url, image.src, `${start + indx} из ${images.length}`)));
@@ -62,27 +63,36 @@ async function downloadChapter(ctx, done, chapter) {
     }
     // кешируем главы
     await ChapterModel.update({ _id: chapterId }, { $set: { imagesID: imageIds } });
-
+    // загрузка завершена
+    let keyboard = Markup.inlineKeyboard([
+        Markup.callbackButton("\u{21A9}Вернуться к главам", `${MangaPaginationAction}:1;${chapter.manga_id}`),
+    ]);
+    await ctx.telegram.sendMessage(userID, `\u{1F4BE}[ <b>${chapter.title}</b> ] - ЗАГРУЗКА ЗАВЕРШЕНА`, Extra.HTML().markup(keyboard));
     return done();
 }
 
-async function sendCachedImages(ctx, imageIds, done) {
+async function sendCachedImages(ctx, chapter, done) {
+    const { imagesID: imageIds } = chapter;
     console.log("скачиваю кешированные");
     const userID = getUserId(ctx);
     // формируем количество паков
     const packs = _.chunk(imageIds, 10);
     let index = 1;
-    await ctx.telegram.sendMessage(userID, `Будет загружено ${imageIds.length} стр.`);
+    await ctx.telegram.sendMessage(userID, `[ <b>${chapter.title}</b> ] - будет загружено <b>${imageIds.length}</b> стр.`, Extra.HTML());
     for (let pack of packs) {
         let start = (index - 1) * 10 + 1;
         let last = (index - 1) * 10 + pack.length;
-        await ctx.telegram.sendMessage(userID, `Скачиваю страницы с ${start} по ${last}`);
+        await ctx.telegram.sendMessage(userID, `\u{23EC}Скачиваю страницы с <b>${start}</b> по <b>${last}</b>`, Extra.HTML());
         await ctx.telegram.sendMediaGroup(userID,
             pack.map((fileId, indx) => createInputMediaPhotoFromFileId(fileId, `${start + indx} из ${imageIds.length}`))
         );
         index++;
     }
-
+    // загрузка завершена
+    let keyboard = Markup.inlineKeyboard([
+        Markup.callbackButton("\u{21A9}Вернуться к главам", `${MangaPaginationAction}:1;${chapter.manga_id}`),
+    ]);
+    await ctx.telegram.sendMessage(userID, `\u{1F4BE}[ <b>${chapter.title}</b> ] - ЗАГРУЗКА ЗАВЕРШЕНА`, Extra.HTML().markup(keyboard));
     return done();
 }
 

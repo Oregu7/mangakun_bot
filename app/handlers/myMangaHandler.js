@@ -12,12 +12,15 @@ module.exports = async(ctx, page = 1, limit = 7) => {
     if (!mangaList.docs.length) return { empty: true };
     const factor = (mangaList.page - 1) * mangaList.limit;
     const keyboard = pagination.createPagesInlineKeyboard(userId, mangaList.page, mangaList.pages);
-    const message = mangaList.docs.map((manga, indx) => {
+    const mangasTemplate = mangaList.docs.map((manga, indx) => {
         let number = indx + 1 + factor;
         return `${number}) <b>${manga.name}</b> (<i>${manga.title}</i>)
-        Подробнее: /manga${manga.mangaId}
-        \u{1F507}Отписаться: /unsub${manga.mangaId}`;
+        Подробнее: /manga${manga.mangaId} \u{1F4D8}
+        Отписаться: /unsub${manga.mangaId} \u{1F515}`;
     }).join("\n\n");
+    const pageSize = (limit * page) - (limit - mangaList.docs.length);
+    const message = `\u{1F234}Ваши подписки [${pageSize} из ${mangaList.total}]\n
+    ${mangasTemplate}`;
     return {
         message: compileMessage(message),
         options: Extra.HTML().markup(Markup.inlineKeyboard(keyboard)),

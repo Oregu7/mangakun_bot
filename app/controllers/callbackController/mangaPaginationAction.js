@@ -19,7 +19,7 @@ module.exports = async(ctx) => {
     const chapters = await ChapterModel.paginate({ manga_id: manga._id }, {
         sort: { number: -1 },
         page: Number(page),
-        limit: 20,
+        limit: 10,
         select: "-imagesURL -imagesID -manga_id",
     });
     const factor = (chapters.page - 1) * chapters.limit;
