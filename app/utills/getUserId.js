@@ -1,9 +1,8 @@
 module.exports = (ctx) => {
     const { message, update } = ctx;
-    if (message)
-        return ctx.message.chat.id;
-    else if (update.callback_query.message)
-        return update.callback_query.message.chat.id;
-    else
-        return update.callback_query.from.id;
+    if (message) return message.from.id;
+    else {
+        const { callback_query, inline_query } = update;
+        return callback_query ? callback_query.from.id : inline_query.from.id;
+    }
 };

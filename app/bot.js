@@ -2,6 +2,7 @@ const config = require("config");
 const Telegraf = require("telegraf");
 const { fork } = require("child_process");
 const controllers = require("./controllers");
+const middlewares = require("./middlewares");
 const localSession = require("./utills/localSession");
 
 const token = config.get("bot.token");
@@ -9,6 +10,7 @@ const bot = new Telegraf(token);
 
 // middlewares
 bot.use(localSession.middleware());
+bot.use(middlewares.allowedUsers());
 // commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);

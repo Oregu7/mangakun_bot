@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const EventEmitter = require("events").EventEmitter;
 const getUserId = require("./getUserId");
 
@@ -6,6 +7,7 @@ const _done = Symbol("done");
 const _callback = Symbol("callback");
 const _dequeue = Symbol("dequeue");
 const _broadcastNumbers = Symbol("broadcastNumbers");
+const _checkExist = Symbol("checkExist");
 
 class Mutex extends EventEmitter {
     constructor(callback, time = 3000) {
@@ -26,24 +28,31 @@ class Mutex extends EventEmitter {
     }
 
     enqueue(ctx, ...args) {
+        // проверяем существование запроса от этого пользователя в очереди
+        if (this[_checkExist](ctx) !== -1) return this.emit("already_in_queue", ctx);
         // добавляем данные в очередь
-        this[_queue].push([ctx, ...args]);
+        this[_queue].push({ ctx, args });
         // оповещаем
-        this[_broadcastNumbers]();
+        this.emit("number", ctx, this[_queue].length);
         // вызываем dequeue, если все очередь свободна
         if (this[_done]) this.emit("dequeue");
     }
 
     [_broadcastNumbers]() {
-        this[_queue].forEach(([ctx], indx) => {
+        this[_queue].forEach(({ ctx }, indx) => {
             this.emit("number", ctx, indx + 1);
         });
+    }
+
+    [_checkExist](ctx) {
+        const userId = getUserId(ctx);
+        return _.findIndex(this[_queue], function(o) { return getUserId(o.ctx) == userId; });
     }
 
     async [_dequeue]() {
         if (this[_queue].length && this[_done]) {
             this[_done] = false;
-            let [ctx, ...args] = this[_queue].shift();
+            let { ctx, args } = this[_queue].shift();
             try {
                 await this[_callback](ctx, this.done.bind(this), ...args);
             } catch (err) {

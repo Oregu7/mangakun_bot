@@ -136,7 +136,6 @@ async function listener(rss) {
         let res = await filterAndCompareResult(rss, group, mangaList);
         try {
             let createdChapters = await ChapterModel.insertMany(compileChapters(res), { ordered: false });
-            console.log(createdChapters);
         } catch (err) {
             console.error(err);
         }

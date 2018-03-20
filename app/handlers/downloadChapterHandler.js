@@ -102,4 +102,11 @@ mutex.on("number", (ctx, number) => {
     return ctx.telegram.sendMessage(userID, message, Extra.HTML());
 });
 
+mutex.on("already_in_queue", (ctx) => {
+    const userID = getUserId(ctx);
+    let message = `\u{26A0}Вы уже <b>добавили</b> главу в <b>очередь</b> на скачивание !
+    Пожалуйста дождитесь завершения загрузки...`;
+    return ctx.telegram.sendMessage(userID, compileMessage(message), Extra.HTML());
+});
+
 module.exports = mutex.enqueue.bind(mutex);
