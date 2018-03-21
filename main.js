@@ -2,9 +2,10 @@ const fs = require("fs");
 const ip = require("ip");
 const bot = require("./app/bot");
 //start bot
-if (process.env.NODE_ENV === "development")
+if (process.env.NODE_ENV === "development") {
+    bot.telegram.setWebhook();
     bot.startPolling();
-else {
+} else {
     const port = 8443;
     // TLS options
     const tlsOptions = {
