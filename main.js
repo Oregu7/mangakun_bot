@@ -1,8 +1,10 @@
 const fs = require("fs");
 const ip = require("ip");
+
+const env = require("config").get("env");
 const bot = require("./app/bot");
 //start bot
-if (process.env.NODE_ENV === "development") {
+if (env === "development") {
     bot.telegram.setWebhook();
     bot.startPolling();
 } else {

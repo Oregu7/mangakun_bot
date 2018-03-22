@@ -10,13 +10,14 @@ const bot = new Telegraf(token);
 
 // middlewares
 bot.use(localSession.middleware());
+bot.hears(/^[A-z0-9]{33}$/, controllers.tokenController.authorizeByToken);
 bot.use(middlewares.allowedUsers());
 // commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
 bot.command("addmanga", controllers.addMangaCommandController);
 bot.command("mymanga", controllers.mymangaController);
-bot.command("test", controllers.getChaptersController);
+bot.command("get_token", controllers.tokenController.generateToken);
 // patterns
 bot.hears(/(http:\/\/)?(www\.)?(readmanga\.me|mintmanga\.com|selfmanga\.ru)\/(\w+)\/?.*/i, controllers.addMangaController);
 bot.hears(/\/manga(\d+)/i, controllers.mangaInfoController);
