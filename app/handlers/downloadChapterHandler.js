@@ -46,6 +46,7 @@ async function downloadChapter(ctx, done, chapter) {
     }
     // формируем количество паков
     const packs = _.chunk(images, 10);
+    console.log(packs);
     let index = 1;
     let imageIds = [];
     await ctx.telegram.sendMessage(userID, `[ <b>${chapter.title}</b> ] - будет загружено <b>${images.length}</b> стр.`, Extra.HTML());

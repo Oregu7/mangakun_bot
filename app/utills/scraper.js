@@ -1,4 +1,3 @@
-const request = require("request");
 const rp = require("request-promise");
 const cheerio = require("cheerio");
 const feedparser = require("./feedparser");
@@ -98,7 +97,7 @@ function downloadImage(chapterURL, src) {
             "Connection": "keep-alive",
             "Referer": chapterURL,
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML like Gecko) Chrome/28.0.1500.95 Safari/537.36",
             "X-Compress": "null",
         },
         encoding: null,
