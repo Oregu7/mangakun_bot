@@ -1,7 +1,9 @@
-module.exports = (ctx) => {
-    const message = `Здравствуйте! Если Вам не сложно, Вы можете поставить оценку нашему боту
-    На следующих ресурсах: ...
-    Это очень поможет в развитии проекта :)`;
+const Extra = require("telegraf/extra");
+const compileMessage = require("../helpers/compileMessage");
 
-    return ctx.reply(message);
+module.exports = (ctx) => {
+    const message = `Привет! Если Вам понравился наш бот, пожалуйста оцените его в StoreBot. 
+
+    \u{1F44D} <b>Оценить:</b> <a href = "telegram.me/storebot?start=mangakun_bot">storebot_rate</a>`;
+    return ctx.reply(compileMessage(message), Extra.HTML());
 };

@@ -17,6 +17,8 @@ bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
 bot.command("addmanga", controllers.addMangaCommandController);
 bot.command("mymanga", controllers.mymangaController);
+bot.command("feedback", controllers.feedbackController);
+bot.command("rate", controllers.rateController);
 bot.command("get_token", controllers.tokenController.generateToken);
 // patterns
 bot.hears(/(http:\/\/)?(www\.)?(readmanga\.me|mintmanga\.com|selfmanga\.ru)\/(\w+)\/?.*/i, controllers.addMangaController);

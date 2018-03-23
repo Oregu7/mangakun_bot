@@ -76,13 +76,14 @@ MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
         .limit(mangaLimit);
 };
 
-MangaSchema.statics.searchManga = function(text, limit = 25) {
+MangaSchema.statics.searchManga = function(text, page = 1, limit = 25) {
     const pattern = new RegExp(text, "i");
-    return this
-        .find({ $or: [{ name: pattern }, { title: pattern }] })
-        .select("-lastChapter -subscribers")
-        .sort("-popularity")
-        .limit(limit);
+    return this.paginate({ $or: [{ name: pattern }, { title: pattern }] }, {
+        select: "-lastChapter -subscribers",
+        sort: "-popularity",
+        limit,
+        page,
+    });
 };
 
 MangaSchema.statics.checkSubscribe = function(userId, mangaId) {

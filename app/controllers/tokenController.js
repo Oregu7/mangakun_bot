@@ -1,6 +1,7 @@
 const Extra = require("telegraf/extra");
 const { uid } = require("rand-token");
 const TokenModel = require("../models/token");
+const startController = require("./startController");
 const getUserId = require("../utills/getUserId");
 const isAdminMiddleware = require("../middlewares/isAdminMiddleware");
 
@@ -18,12 +19,12 @@ async function authorizeByToken(ctx) {
     const userId = getUserId(ctx);
     let message = "Увы, но я не нашел Ваш токен!";
     if (token && !token.used) {
-        message = "Вы авторизованы!\nНажмите, чтобы посмотреть возможности бота: /start";
         ctx.session.allowed = true;
         token.used = true;
         token.userId = userId;
         token.updated_at = Date.now();
         await token.save();
+        return startController(ctx);
     } else if (token && token.used) {
         message = "Данный токен уже использован !";
     }

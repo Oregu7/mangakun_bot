@@ -4,9 +4,11 @@ const MangaModel = require("../models/manga");
 const mangaManager = require("../helpers/mangaManager");
 
 module.exports = async(ctx) => {
+    const { query, offset } = ctx.inlineQuery;
+    const page = offset.length ? Number(offset) : 1;
     try {
-        const mangaList = await MangaModel.searchManga(ctx.inlineQuery.query, 27);
-        const results = mangaList.map((manga) => Object.assign({}, {
+        const mangaList = await MangaModel.searchManga(query, page);
+        const results = mangaList.docs.map((manga) => Object.assign({}, {
             id: uid(11),
             type: "article",
             thumb_url: manga.thumb,
@@ -17,7 +19,11 @@ module.exports = async(ctx) => {
             disable_web_page_preview: false,
         }, mangaManager.getKeyboard(manga).extra()));
 
-        let extra = { cache_time: 300 };
+        // доп опции
+        let extra = {
+            cache_time: 300,
+            next_offset: (mangaList.page < mangaList.pages) ? mangaList.page + 1 : "",
+        };
         if (!results.length) {
             extra = Object.assign({}, extra, {
                 switch_pm_text: "я не нашел твою мангу :(",

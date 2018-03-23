@@ -34,7 +34,7 @@ const getKeyboard = (manga) => {
             Markup.urlButton("\u{1F4D6}Читать", manga.url),
         ],
         [
-            Markup.callbackButton("\u{1F4BE}СКАЧАТЬ", `${DownloadChapterAction}:${manga.id}`),
+            Markup.callbackButton("\u{1F4BE}СКАЧАТЬ", `${DownloadChapterAction}:${manga.mangaId}`),
             Markup.callbackButton("\u{1F365}ГЛАВЫ", `${MangaPaginationAction}:1;${manga.id}`),
         ],
         [Markup.switchToCurrentChatButton("\u{1F50D}Продолжить поиск...", "")],

@@ -7,6 +7,8 @@ const mangaInfoController = require("./mangaInfoController");
 const unsubMangaController = require("./unsubMangaController");
 const downloadChapterController = require("./downloadChapterController");
 const tokenController = require("./tokenController");
+const feedbackController = require("./feedbackController");
+const rateController = require("./rateController");
 
 const inlineQueryController = require("./inlinequeryController");
 const callbackController = require("./callbackController");
@@ -21,6 +23,8 @@ module.exports = {
     unsubMangaController,
     downloadChapterController,
     tokenController,
+    feedbackController,
+    rateController,
 
     inlineQueryController,
     callbackController,

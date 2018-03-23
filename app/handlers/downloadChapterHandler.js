@@ -59,7 +59,6 @@ async function downloadChapter(ctx, done, chapter) {
         let data = await ctx.telegram.sendMediaGroup(userID, pages);
         index++;
         imageIds.push(...parseImangeIds(data));
-        sleep(3500);
     }
     // кешируем главы
     await ChapterModel.update({ _id: chapterId }, { $set: { imagesID: imageIds } });
