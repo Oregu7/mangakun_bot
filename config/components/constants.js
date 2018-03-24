@@ -4,6 +4,7 @@ const DownloadNextChapterAction = "dw_next_chapter";
 const MangaPaginationAction = "mg_paginate";
 const SubscribeMangaUpdatesAction = "sub_manga";
 const UnsubscribeMangaUpdatesAction = "unsub_manga";
+const MyMangaPageAction = "mymanga_page";
 
 module.exports = {
     BackToMangaAction,
@@ -12,4 +13,5 @@ module.exports = {
     MangaPaginationAction,
     SubscribeMangaUpdatesAction,
     UnsubscribeMangaUpdatesAction,
+    MyMangaPageAction,
 };

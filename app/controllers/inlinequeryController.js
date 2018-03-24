@@ -6,8 +6,9 @@ const mangaManager = require("../helpers/mangaManager");
 module.exports = async(ctx) => {
     const { query, offset } = ctx.inlineQuery;
     const page = offset.length ? Number(offset) : 1;
+    const queryData = getQueryData(query);
     try {
-        const mangaList = await MangaModel.searchManga(query, page);
+        const mangaList = await MangaModel.searchManga(queryData, page);
         const results = mangaList.docs.map((manga) => Object.assign({}, {
             id: uid(11),
             type: "article",
@@ -37,3 +38,15 @@ module.exports = async(ctx) => {
         console.error(err);
     }
 };
+
+function getQueryData(query) {
+    const indx = query.indexOf(":");
+    let genre = "";
+    let text = query;
+    if (indx !== -1) {
+        genre = query.slice(0, indx).toLowerCase().trim();
+        text = query.slice(indx + 1).trim();
+    }
+
+    return { genre, text };
+}

@@ -10,6 +10,7 @@ const tokenController = require("./tokenController");
 const feedbackController = require("./feedbackController");
 const rateController = require("./rateController");
 const helpController = require("./helpController");
+const genresController = require("./genresController");
 
 const inlineQueryController = require("./inlinequeryController");
 const callbackController = require("./callbackController");
@@ -27,6 +28,7 @@ module.exports = {
     feedbackController,
     rateController,
     helpController,
+    genresController,
 
     inlineQueryController,
     callbackController,

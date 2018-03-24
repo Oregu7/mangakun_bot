@@ -12,6 +12,7 @@ const {
     DownloadChapterAction,
     SubscribeMangaUpdatesAction,
     DownloadNextChapterAction,
+    MyMangaPageAction,
 } = require("config").get("constants");
 
 const callback = new Router(({ callbackQuery }) => {
@@ -28,7 +29,7 @@ callback.on(DownloadChapterAction, downloadChapterAction);
 callback.on(MangaPaginationAction, mangaPaginationAction);
 callback.on(BackToMangaAction, backToMangaAction);
 callback.on(SubscribeMangaUpdatesAction, subscribeMangaUpdatesAction);
-callback.on("mymanga_page", myMangaPageAction);
+callback.on(MyMangaPageAction, myMangaPageAction);
 callback.on(DownloadNextChapterAction, downloadNextChapterAction);
 
 module.exports = callback;

@@ -76,9 +76,12 @@ MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
         .limit(mangaLimit);
 };
 
-MangaSchema.statics.searchManga = function(text, page = 1, limit = 25) {
+MangaSchema.statics.searchManga = function({ text, genre }, page = 1, limit = 25) {
     const pattern = new RegExp(text, "i");
-    return this.paginate({ $or: [{ name: pattern }, { title: pattern }] }, {
+    const req = { $or: [{ name: pattern }, { title: pattern }] };
+    if (genre.length) req["genres"] = genre;
+
+    return this.paginate(req, {
         select: "-lastChapter -subscribers",
         sort: "-popularity",
         limit,
