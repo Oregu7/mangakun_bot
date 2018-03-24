@@ -1,5 +1,4 @@
 const _ = require("lodash");
-const sleep = require("thread-sleep");
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const Mutex = require("../utills/mutex");
@@ -11,7 +10,10 @@ const {
     createInputMediaPhotoFromStream,
     getChapterImages,
 } = require("../utills/scraper");
-const { MangaPaginationAction } = require("config").get("constants");
+const {
+    MangaPaginationAction,
+    DownloadNextChapterAction,
+} = require("config").get("constants");
 
 const mutex = new Mutex(downloadChapter);
 
@@ -46,7 +48,6 @@ async function downloadChapter(ctx, done, chapter) {
     }
     // формируем количество паков
     const packs = _.chunk(images, 10);
-    console.log(packs);
     let index = 1;
     let imageIds = [];
     await ctx.telegram.sendMessage(userID, `[ <b>${chapter.title}</b> ] - будет загружено <b>${images.length}</b> стр.`, Extra.HTML());
@@ -64,9 +65,7 @@ async function downloadChapter(ctx, done, chapter) {
     // кешируем главы
     await ChapterModel.update({ _id: chapterId }, { $set: { imagesID: imageIds } });
     // загрузка завершена
-    let keyboard = Markup.inlineKeyboard([
-        Markup.callbackButton("\u{21A9}Вернуться к главам", `${MangaPaginationAction}:1;${chapter.manga_id}`),
-    ]);
+    let keyboard = createKeyboardByChapter(chapter);
     await ctx.telegram.sendMessage(userID, `\u{1F4BE}[ <b>${chapter.title}</b> ] - ЗАГРУЗКА ЗАВЕРШЕНА`, Extra.HTML().markup(keyboard));
     return done();
 }
@@ -89,9 +88,7 @@ async function sendCachedImages(ctx, chapter, done) {
         index++;
     }
     // загрузка завершена
-    let keyboard = Markup.inlineKeyboard([
-        Markup.callbackButton("\u{21A9}Вернуться к главам", `${MangaPaginationAction}:1;${chapter.manga_id}`),
-    ]);
+    let keyboard = createKeyboardByChapter(chapter);
     await ctx.telegram.sendMessage(userID, `\u{1F4BE}[ <b>${chapter.title}</b> ] - ЗАГРУЗКА ЗАВЕРШЕНА`, Extra.HTML().markup(keyboard));
     return done();
 }
@@ -108,5 +105,13 @@ mutex.on("already_in_queue", (ctx) => {
     Пожалуйста дождитесь завершения загрузки...`;
     return ctx.telegram.sendMessage(userID, compileMessage(message), Extra.HTML());
 });
+
+function createKeyboardByChapter(chapter) {
+    const { manga_id, number } = chapter;
+    return Markup.inlineKeyboard([
+        Markup.callbackButton("\u{21A9} Вернуться к главам", `${MangaPaginationAction}:1;${manga_id}`),
+        Markup.callbackButton("Скачать следующую \u{23EC}", `${DownloadNextChapterAction}:${number};${manga_id}`),
+    ], { columns: 2 });
+}
 
 module.exports = mutex.enqueue.bind(mutex);
