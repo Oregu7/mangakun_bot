@@ -30,12 +30,12 @@ const getMessage = (manga) => {
 const getKeyboard = (manga) => {
     const keyboard = Markup.inlineKeyboard([
         [
-            Markup.callbackButton("\u{1F4EE}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.mangaId}`),
-            Markup.urlButton("\u{1F4D6}Читать", manga.url),
+            Markup.callbackButton("\u{1F514}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.mangaId}`),
+            Markup.urlButton("\u{1F310}Сайт", manga.url),
         ],
         [
-            Markup.callbackButton("\u{1F4BE}СКАЧАТЬ", `${DownloadChapterAction}:${manga.mangaId}`),
-            Markup.callbackButton("\u{1F365}ГЛАВЫ", `${MangaPaginationAction}:1;${manga.id}`),
+            Markup.callbackButton("\u{23EC}СКАЧАТЬ", `${DownloadChapterAction}:${manga.mangaId}`),
+            Markup.callbackButton("\u{1F4DA}ГЛАВЫ", `${MangaPaginationAction}:1;${manga.id}`),
         ],
         [Markup.switchToCurrentChatButton("\u{1F50D}Продолжить поиск...", "")],
     ]);

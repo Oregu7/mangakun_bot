@@ -1,5 +1,6 @@
 /node_modules/
 /slimerjs/
+/test/
 .env
 session_db.json
 updates.db

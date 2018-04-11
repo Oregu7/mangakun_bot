@@ -15,8 +15,8 @@ bot.use(middlewares.allowedUsers());
 // commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
-bot.command("addmanga", controllers.addMangaCommandController);
-bot.command("mymanga", controllers.mymangaController);
+bot.command("add", controllers.addMangaCommandController);
+bot.command("manga", controllers.mymangaController);
 bot.command("feedback", controllers.feedbackController);
 bot.command("rate", controllers.rateController);
 bot.command("help", controllers.helpController);

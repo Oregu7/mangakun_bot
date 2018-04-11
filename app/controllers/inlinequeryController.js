@@ -1,7 +1,6 @@
 const { uid } = require("rand-token");
 const escape = require("escape-html");
 const MangaModel = require("../models/manga");
-const mangaManager = require("../helpers/mangaManager");
 
 module.exports = async(ctx) => {
     const { query, offset } = ctx.inlineQuery;
@@ -9,16 +8,14 @@ module.exports = async(ctx) => {
     const queryData = getQueryData(query);
     try {
         const mangaList = await MangaModel.searchManga(queryData, page);
-        const results = mangaList.docs.map((manga) => Object.assign({}, {
+        const results = mangaList.docs.map((manga) => ({
             id: uid(11),
             type: "article",
             thumb_url: manga.thumb,
             title: escape(manga.name),
             description: escape(`${manga.description.slice(0, 70)}...`),
-            message_text: mangaManager.getMessage(manga),
-            parse_mode: "HTML",
-            disable_web_page_preview: false,
-        }, mangaManager.getKeyboard(manga).extra()));
+            message_text: `/manga${manga.mangaId}`,
+        }));
 
         // доп опции
         let extra = {
