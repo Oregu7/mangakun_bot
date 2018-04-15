@@ -1,14 +1,14 @@
-const MangaModel = require("../models/manga");
+const { MangaModel, SubscriberModel } = require("../models");
+const { messageManager: { getChatId }} = require("../utils");
 
 module.exports = async(ctx) => {
     const mangaId = Number(ctx.match[1]);
-    const userId = ctx.session.authToken;
+    const chatId = getChatId(ctx);
     // достаем мангу, подписчиков фильтруем по id-пользователя
-    const manga = await MangaModel.checkSubscribe(userId, mangaId);
+    const manga = await MangaModel.getManga({ mangaId });
     if (!manga) return ctx.reply("Я не нашел мангу с таким идентификатором!");
-    if (!manga.subscribers.length) return ctx.reply("Вы уже отписались от этой манги!");
     // отписываемся от обновлений
-    await MangaModel.update({ _id: manga._id }, { $pull: { subscribers: { user: userId } } });
+    await SubscriberModel.unsubscribeToManga(chatId, manga._id);
 
     return ctx.reply(`Вы отписались от - [${manga.name}]`);
 };

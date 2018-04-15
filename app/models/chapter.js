@@ -16,5 +16,4 @@ const ChapterSchema = mongoose.Schema({
 });
 
 ChapterSchema.plugin(mongoosePaginate);
-
 module.exports = mongoose.model("Chapter", ChapterSchema);

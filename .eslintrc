@@ -6,7 +6,7 @@
     },
     "rules": {
         "indent": ["error", 4, { "SwitchCase": 1 }],
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": ["error", "unix"],
         "quotes": ["error", "double"],
         "eol-last": ["error", "never"],
         "semi": ["error", "always"],

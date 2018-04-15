@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-const shortid = require("shortid");
 const mongoosePaginate = require("mongoose-paginate");
 const autoIncrement = require("mongoose-auto-increment");
-const UserModel = require("./user");
 
 const MangaSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -13,17 +11,8 @@ const MangaSchema = mongoose.Schema({
     image: { type: String, required: true },
     thumb: { type: String, required: true },
     description: { type: String, default: "" },
-    publicId: {
-        type: String,
-        unique: true,
-        default: shortid.generate,
-    },
     mangaId: { type: Number, unique: true },
     genres: [String],
-    subscribers: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        date: { type: Date, default: Date.now },
-    }],
 });
 
 // подключаем плагины
@@ -86,24 +75,6 @@ MangaSchema.statics.searchManga = function({ text, genre }, page = 1, limit = 25
         sort: "-popularity",
         limit,
         page,
-    });
-};
-
-MangaSchema.statics.checkSubscribe = function(userId, mangaId) {
-    return this.findOne({ mangaId })
-        .select({
-            name: 1,
-            url: 1,
-            subscribers: { $elemMatch: { user: userId } },
-        });
-};
-
-MangaSchema.statics.getUserSubscribes = function(userId, page = 1, limit = 10) {
-    return this.paginate({ "subscribers.user": userId }, {
-        sort: "-subscribers.date",
-        select: "name title url publicId mangaId",
-        page,
-        limit,
     });
 };
 
