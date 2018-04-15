@@ -1,5 +1,5 @@
-const ChapterModel = require("../../models/chapter");
-const downloadChapterHandler = require("../../handlers/downloadChapterHandler");
+const { ChapterModel } = require("../../models");
+const { downloadChapterHandler } = require("../../handlers");
 
 module.exports = async(ctx) => {
     const [number, mangaId] = ctx.state.payload.split(";");

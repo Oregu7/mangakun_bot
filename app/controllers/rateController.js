@@ -1,5 +1,5 @@
 const Extra = require("telegraf/extra");
-const compileMessage = require("../helpers/compileMessage");
+const { compileMessage } = require("../utils");
 
 module.exports = (ctx) => {
     const message = `Привет! Если Вам понравился наш бот, пожалуйста оцените его в StoreBot. 

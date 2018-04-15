@@ -6,9 +6,9 @@ const {
     MangaPaginationAction,
     DownloadChapterAction,
 } = require("config").get("constants");
-const feedparser = require("../utills/feedparser");
-const ChapterModel = require("../models/chapter");
-const compileMessage = require("./compileMessage");
+const feedparser = require("./feedparser");
+const { ChapterModel } = require("../models");
+const { compileMessage } = require("../utils");
 
 const getMessage = (manga) => {
     const {

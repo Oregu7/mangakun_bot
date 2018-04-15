@@ -1,8 +1,7 @@
 const config = require("config");
 const colors = require("colors");
 const feedparser = require("./feedparser");
-const MangaModel = require("../models/manga");
-const ChapterModel = require("../models/chapter");
+const { MangaModel, ChapterModel } = require("../models");
 const sleep = require("thread-sleep");
 
 async function createChapters(rss, mangaId) {

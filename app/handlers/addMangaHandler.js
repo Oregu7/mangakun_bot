@@ -1,6 +1,6 @@
-const MangaModel = require("../models/manga");
-const { getManga } = require("../utills/scraper");
-const { sendManga, createChapters } = require("../helpers/mangaManager");
+const { MangaModel } = require("../models");
+const { getManga } = require("../helpers").scraper;
+const { sendManga, createChapters } = require("../helpers").mangaManager;
 
 module.exports = async(ctx, mangaName, site) => {
     if (!mangaName) return ctx.reply("Что-то пошло не так :(");

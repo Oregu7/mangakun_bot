@@ -1,5 +1,5 @@
 const Extra = require("telegraf/extra");
-const compileMessage = require("../helpers/compileMessage");
+const { compileMessage } = require("../utils");
 
 module.exports = (ctx) => {
     const message = `\u{2795}<b>Добавление манги</b> - если Вы не смогли найти нужную мангу 

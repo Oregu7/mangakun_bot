@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const EventEmitter = require("events").EventEmitter;
-const getUserId = require("./getUserId");
+const { getChatId } = require("./messageManager");
 
 const _queue = Symbol("queue");
 const _done = Symbol("done");
@@ -45,8 +45,8 @@ class Mutex extends EventEmitter {
     }
 
     [_checkExist](ctx) {
-        const userId = getUserId(ctx);
-        return _.findIndex(this[_queue], function(o) { return getUserId(o.ctx) == userId; });
+        const userId = getChatId(ctx);
+        return _.findIndex(this[_queue], function(o) { return getChatId(o.ctx) == userId; });
     }
 
     async [_dequeue]() {
@@ -56,7 +56,7 @@ class Mutex extends EventEmitter {
             try {
                 await this[_callback](ctx, this.done.bind(this), ...args);
             } catch (err) {
-                const userId = getUserId(ctx);
+                const userId = getChatId(ctx);
                 ctx.telegram.sendMessage(userId, "Что-то пошло не так, попробуйте позднее");
                 this.done();
                 console.error(err);

@@ -1,5 +1,5 @@
-const MangaModel = require("../models/manga");
-const { sendManga } = require("../helpers/mangaManager");
+const { MangaModel } = require("../models");
+const { sendManga } = require("../helpers").mangaManager;
 
 module.exports = async(ctx) => {
     const mangaId = Number(ctx.match[1]);

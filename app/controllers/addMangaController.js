@@ -1,4 +1,4 @@
-const addMangaHandler = require("../handlers/addMangaHandler");
+const { addMangaHandler } = require("../handlers");
 
 module.exports = async(ctx) => {
     const [siteName, mangaName] = ctx.match.slice(3, 5);

@@ -3,9 +3,8 @@ const config = require("config");
 const storage = require("dirty")("updates.db");
 const hash = require("object-hash");
 
-const MangaModel = require("../models/manga");
-const ChapterModel = require("../models/chapter");
-const compileMessage = require("../helpers/compileMessage");
+const { MangaModel, ChapterModel } = require("../models");
+const { compileMessage } = require("../utils");
 const feedparser = require("./feedparser");
 const { getManga } = require("./scraper");
 

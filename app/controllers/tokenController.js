@@ -1,13 +1,13 @@
 const Extra = require("telegraf/extra");
 const { uid } = require("rand-token");
-const TokenModel = require("../models/token");
+const { TokenModel } = require("../models");
 const startController = require("./startController");
-const getUserId = require("../utills/getUserId");
-const isAdminMiddleware = require("../middlewares/isAdminMiddleware");
+const { getChatId } = require("../utils").messageManager;
+const { isAdminMiddleware } = require("../middlewares");
 
 async function generateToken(ctx) {
     const source = uid(33);
-    const authorId = getUserId(ctx);
+    const authorId = getChatId(ctx);
     const token = await TokenModel.create({ source, authorId });
     const message = `\u{2795}Сгенерирован новый <b>токен</b> : <code>${token.source}</code>`;
     return ctx.reply(message, Extra.HTML());
@@ -16,7 +16,7 @@ async function generateToken(ctx) {
 async function authorizeByToken(ctx) {
     const source = ctx.message.text;
     const token = await TokenModel.findOne({ source });
-    const userId = getUserId(ctx);
+    const userId = getChatId(ctx);
     let message = "Увы, но я не нашел Ваш токен!";
     if (token && !token.used) {
         ctx.session.allowed = true;

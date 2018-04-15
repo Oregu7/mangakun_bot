@@ -1,15 +1,15 @@
 const _ = require("lodash");
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
-const Mutex = require("../utills/mutex");
-const getUserId = require("../utills/getUserId");
-const ChapterModel = require("../models/chapter");
-const compileMessage = require("../helpers/compileMessage");
+const { Mutex, compileMessage } = require("../utils");
+const { getChatId } = require("../utils").messageManager;
+const { ChapterModel } = require("../models");
+
 const {
     createInputMediaPhotoFromFileId,
     createInputMediaPhotoFromStream,
     getChapterImages,
-} = require("../utills/scraper");
+} = require("../helpers").scraper;
 const {
     MangaPaginationAction,
     DownloadNextChapterAction,
@@ -33,7 +33,7 @@ async function downloadChapter(ctx, done, chapter) {
     const { url, _id: chapterId, imagesID } = chapter;
     // отправляем кешированные картинки
     if (imagesID.length) return sendCachedImages(ctx, chapter, done);
-    const userID = getUserId(ctx);
+    const userID = getChatId(ctx);
     // достаем url's и валидируем по длине
     const images = await getChapterImages(url);
     const sizeDifference = images.length - images.filter(filterSize);
@@ -73,7 +73,7 @@ async function downloadChapter(ctx, done, chapter) {
 async function sendCachedImages(ctx, chapter, done) {
     const { imagesID: imageIds } = chapter;
     console.log("скачиваю кешированные");
-    const userID = getUserId(ctx);
+    const userID = getChatId(ctx);
     // формируем количество паков
     const packs = _.chunk(imageIds, 10);
     let index = 1;
@@ -94,13 +94,13 @@ async function sendCachedImages(ctx, chapter, done) {
 }
 
 mutex.on("number", (ctx, number) => {
-    const userID = getUserId(ctx);
+    const userID = getChatId(ctx);
     let message = `\u{26A0}Ваш <b>номер</b> в очереди : <b>${number}</b>`;
     return ctx.telegram.sendMessage(userID, message, Extra.HTML());
 });
 
 mutex.on("already_in_queue", (ctx) => {
-    const userID = getUserId(ctx);
+    const userID = getChatId(ctx);
     let message = `\u{26A0}Вы уже <b>добавили</b> главу в <b>очередь</b> на скачивание !
     Пожалуйста дождитесь завершения загрузки...`;
     return ctx.telegram.sendMessage(userID, compileMessage(message), Extra.HTML());

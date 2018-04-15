@@ -1,5 +1,5 @@
 const Extra = require("telegraf/extra");
-const compileMessage = require("../helpers/compileMessage");
+const { compileMessage } = require("../utils");
 
 module.exports = (ctx) => {
     const message = `Мы рекомендуем вам изучить ответы на вопросы в <a href="http://telegra.ph/Spravka-Mangakun-Bot-03-23">справке</a>. 

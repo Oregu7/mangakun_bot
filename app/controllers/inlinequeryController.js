@@ -1,6 +1,6 @@
 const { uid } = require("rand-token");
 const escape = require("escape-html");
-const MangaModel = require("../models/manga");
+const { MangaModel } = require("../models");
 
 module.exports = async(ctx) => {
     const { query, offset } = ctx.inlineQuery;

@@ -1,5 +1,5 @@
 const { MangaModel, SubscriberModel } = require("../models");
-const { messageManager: { getChatId }} = require("../utils");
+const { getChatId } = require("../utils").messageManager;
 
 module.exports = async(ctx) => {
     const mangaId = Number(ctx.match[1]);

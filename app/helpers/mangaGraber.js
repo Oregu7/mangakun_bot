@@ -2,7 +2,7 @@ const sleep = require("thread-sleep");
 const config = require("config");
 const colors = require("colors");
 const scraper = require("./scraper");
-const MangaModel = require("../../app/models/manga");
+const { MangaModel } = require("../models");
 
 async function main(first, last) {
     const step = 70;

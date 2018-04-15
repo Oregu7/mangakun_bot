@@ -1,9 +1,8 @@
 const Extra = require("telegraf/extra");
-const compileMessage = require("../helpers/compileMessage");
-const { sendManga } = require("../helpers/mangaManager");
+const { compileMessage } = require("../utils");
+const { sendManga } = require("../helpers").mangaManager;
 const addMangaCommandController = require("./addMangaCommandController");
-const UserModel = require("../models/user");
-const MangaModel = require("../models/manga");
+const { UserModel, MangaModel } = require("../models");
 
 async function startCommand(ctx) {
     const message = `<b>Mangakun Bot - </b> это бот, который будет оповещать

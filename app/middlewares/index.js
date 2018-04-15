@@ -1,5 +1,7 @@
-const allowedUsers = require("./allowedUsersMiddleware");
+const allowedUsersMiddleware = require("./allowedUsersMiddleware");
+const isAdminMiddleware = require("./isAdminMiddleware");
 
 module.exports = {
-    allowedUsers,
+    allowedUsersMiddleware,
+    isAdminMiddleware,
 };

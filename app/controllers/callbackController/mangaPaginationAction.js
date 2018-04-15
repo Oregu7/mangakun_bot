@@ -1,10 +1,9 @@
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
 const moment = require("moment");
-const ChapterModel = require("../../models/chapter");
-const MangaModel = require("../../models/manga");
-const compileMessage = require("../../helpers/compileMessage");
-const Pagination = require("../../helpers/pagination");
+const { ChapterModel, MangaModel } = require("../../models");
+const { compileMessage } = require("../../utils");
+const Pagination = require("../../helpers").pagination;
 const { BackToMangaAction, MangaPaginationAction } = require("config").get("constants");
 
 const pagination = new Pagination(MangaPaginationAction);

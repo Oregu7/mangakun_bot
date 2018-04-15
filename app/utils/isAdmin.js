@@ -1,5 +1,5 @@
 const { admins } = require("config").get("base");
-const getUserId = require("./getUserId");
+const { getUserId } = require("./messageManager");
 
 module.exports = (ctx) => {
     const userId = getUserId(ctx);

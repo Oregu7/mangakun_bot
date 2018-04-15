@@ -1,6 +1,5 @@
-const MangaModel = require("../models/manga");
-const ChapterModel = require("../models/chapter");
-const downloadChapterHandler = require("../handlers/downloadChapterHandler");
+const { MangaModel, ChapterModel } = require("../models");
+const { downloadChapterHandler } = require("../handlers");
 
 module.exports = async(ctx) => {
     const [, mangaId, chapterNumber] = ctx.match;

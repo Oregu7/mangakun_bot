@@ -1,7 +1,7 @@
 const rp = require("request-promise");
 const cheerio = require("cheerio");
 const feedparser = require("./feedparser");
-const ChapterModel = require("../models/chapter");
+const { ChapterModel } = require("../models");
 
 function scrap(url) {
     return rp.get({

@@ -1,4 +1,4 @@
-const myMangaHandler = require("../handlers/myMangaHandler");
+const { myMangaHandler } = require("../handlers");
 
 module.exports = async(ctx) => {
     const { message, options, empty } = await myMangaHandler(ctx);
