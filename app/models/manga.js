@@ -13,6 +13,10 @@ const MangaSchema = mongoose.Schema({
     description: { type: String, default: "" },
     mangaId: { type: Number, unique: true },
     genres: [String],
+    subscribers: [{
+        user: { type: Number, index: true },
+        date: { type: Date, default: Date.now },
+    }],
 });
 
 // подключаем плагины
@@ -47,9 +51,18 @@ MangaSchema.virtual("firstChapter", {
 });
 
 // статичные методы
-MangaSchema.statics.getManga = async function(query = {}) {
+MangaSchema.statics.getManga = async function(query = {}, userId = null) {
     const [manga = null] = await this.find(query)
-        .select("-lastChapter -subscribers")
+        .select({
+            name: 1,
+            title: 1,
+            url: 1,
+            mangaId: 1,
+            image: 1,
+            genres: 1,
+            description: 1,
+            subscribers: userId ? { $elemMatch: { user: userId } } : -1,
+        })
         .sort("-popularity")
         .limit(1);
     return manga;
@@ -76,6 +89,35 @@ MangaSchema.statics.searchManga = function({ text, genre }, page = 1, limit = 25
         limit,
         page,
     });
+};
+
+MangaSchema.statics.getUserSubscribes = function(userId, page = 1, limit = 10) {
+    return this.paginate({ "subscribers.user": userId }, {
+        sort: "-subscribers.date",
+        select: "name title url publicId mangaId",
+        page,
+        limit,
+    });
+};
+
+MangaSchema.statics.checkSubscribe = async function(userId, mangaId) {
+    const [manga = null] = await this.find({ _id: mangaId, "subscribers.user": userId })
+        .select("_id name")
+        .limit(1);
+
+    return manga;
+};
+
+MangaSchema.statics.subscribeToManga = function(userId, mangaId) {
+    return this.findOneAndUpdate({ _id: mangaId }, {
+        $push: { subscribers: { user: userId } },
+    }, { select: "name title url publicId mangaId" });
+};
+
+MangaSchema.statics.unsubscribeToManga = function(userId, mangaId) {
+    return this.findOneAndUpdate({ _id: mangaId }, {
+        $pull: { subscribers: { user: userId } },
+    }, { select: "name title url publicId mangaId" });
 };
 
 module.exports = mongoose.model("Manga", MangaSchema);

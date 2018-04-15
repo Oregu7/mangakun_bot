@@ -26,4 +26,4 @@ async function main(first, last) {
     }
 }
 
-main(84, 146);
+//main(84, 146);

@@ -3,6 +3,7 @@ const Extra = require("telegraf/extra");
 const escape = require("escape-html");
 const {
     SubscribeMangaUpdatesAction,
+    UnsubscribeMangaUpdatesAction,
     MangaPaginationAction,
     DownloadChapterAction,
 } = require("config").get("constants");
@@ -27,10 +28,18 @@ const getMessage = (manga) => {
     return compileMessage(message);
 };
 
-const getKeyboard = (manga) => {
+function getSubOrUnsubButton(manga, unsubscribeButton = false) {
+    const { subscribers = null } = manga;
+    if (unsubscribeButton || (subscribers && subscribers.length))
+        return Markup.callbackButton("\u{1F515}Отписаться", `${UnsubscribeMangaUpdatesAction}:${manga.id}`);
+    else
+        return Markup.callbackButton("\u{1F514}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.id}`);
+}
+
+const getKeyboard = (manga, unsubscribeButton = false) => {
     const keyboard = Markup.inlineKeyboard([
         [
-            Markup.callbackButton("\u{1F514}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.id}`),
+            getSubOrUnsubButton(manga, unsubscribeButton),
             Markup.urlButton("\u{1F310}Сайт", manga.url),
         ],
         [

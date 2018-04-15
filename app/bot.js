@@ -3,7 +3,7 @@ const Telegraf = require("telegraf");
 const { fork } = require("child_process");
 const controllers = require("./controllers");
 const middlewares = require("./middlewares");
-const localSession = require("./utills/localSession");
+const { localSession } = require("./utils");
 
 const token = config.get("bot.token");
 const bot = new Telegraf(token);
@@ -11,7 +11,7 @@ const bot = new Telegraf(token);
 // middlewares
 bot.use(localSession.middleware());
 bot.hears(/^[A-z0-9]{33}$/, controllers.tokenController.authorizeByToken);
-bot.use(middlewares.allowedUsers());
+bot.use(middlewares.allowedUsersMiddleware());
 // commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
@@ -39,7 +39,7 @@ bot.catch((err) => {
     console.error(err);
 });
 
-const childProcess = fork(`${__dirname}/utills/mangaUpdatesListener.js`);
+const childProcess = fork(`${__dirname}/helpers/mangaUpdatesListener.js`);
 childProcess.on("message", (data) => {
     for (let item of data) {
         let { message, users } = item;
