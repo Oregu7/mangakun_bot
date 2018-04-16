@@ -51,20 +51,32 @@ MangaSchema.virtual("firstChapter", {
 });
 
 // статичные методы
-MangaSchema.statics.getManga = async function(query = {}, userId = null) {
+MangaSchema.statics.getManga = async function(query = {}) {
     const [manga = null] = await this.find(query)
-        .select({
-            name: 1,
-            title: 1,
-            url: 1,
-            mangaId: 1,
-            image: 1,
-            genres: 1,
-            description: 1,
-            subscribers: userId ? { $elemMatch: { user: userId } } : -1,
-        })
+        .select("-subscribers")
         .sort("-popularity")
         .limit(1);
+    return manga;
+};
+
+MangaSchema.statics.getMangaAndCheckSub = async function(query = {}, userId) {
+    const [manga = null] = await this.aggregate([
+        { $match: query },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                title: 1,
+                url: 1,
+                mangaId: 1,
+                image: 1,
+                genres: 1,
+                description: 1,
+                subscriber: { $in: [userId, "$subscribers.user"] },
+            },
+        },
+    ]);
+
     return manga;
 };
 

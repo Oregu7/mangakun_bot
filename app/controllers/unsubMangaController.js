@@ -1,4 +1,4 @@
-const { MangaModel, SubscriberModel } = require("../models");
+const { MangaModel } = require("../models");
 const { getChatId } = require("../utils").messageManager;
 
 module.exports = async(ctx) => {
@@ -8,7 +8,6 @@ module.exports = async(ctx) => {
     const manga = await MangaModel.getManga({ mangaId });
     if (!manga) return ctx.reply("Я не нашел мангу с таким идентификатором!");
     // отписываемся от обновлений
-    await SubscriberModel.unsubscribeToManga(chatId, manga._id);
-
-    return ctx.reply(`Вы отписались от - [${manga.name}]`);
+    const ok = await MangaModel.unsubscribeToManga(chatId, manga._id);
+    return ctx.reply(`Вы отписались от - [${ok.name}]`);
 };

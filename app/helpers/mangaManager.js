@@ -29,11 +29,11 @@ const getMessage = (manga) => {
 };
 
 function getSubOrUnsubButton(manga, unsubscribeButton = false) {
-    const { subscribers = null } = manga;
-    if (unsubscribeButton || (subscribers && subscribers.length))
-        return Markup.callbackButton("\u{1F515}Отписаться", `${UnsubscribeMangaUpdatesAction}:${manga.id}`);
+    const { subscriber = false } = manga;
+    if (unsubscribeButton || subscriber)
+        return Markup.callbackButton("\u{1F515}Отписаться", `${UnsubscribeMangaUpdatesAction}:${manga._id}`);
     else
-        return Markup.callbackButton("\u{1F514}Подписаться", `${SubscribeMangaUpdatesAction}:${manga.id}`);
+        return Markup.callbackButton("\u{1F514}Подписаться", `${SubscribeMangaUpdatesAction}:${manga._id}`);
 }
 
 const getKeyboard = (manga, unsubscribeButton = false) => {
@@ -43,8 +43,8 @@ const getKeyboard = (manga, unsubscribeButton = false) => {
             Markup.urlButton("\u{1F310}Сайт", manga.url),
         ],
         [
-            Markup.callbackButton("\u{23EC}СКАЧАТЬ", `${DownloadChapterAction}:${manga.id}`),
-            Markup.callbackButton("\u{1F4DA}ГЛАВЫ", `${MangaPaginationAction}:1;${manga.id}`),
+            Markup.callbackButton("\u{23EC}СКАЧАТЬ", `${DownloadChapterAction}:${manga._id}`),
+            Markup.callbackButton("\u{1F4DA}ГЛАВЫ", `${MangaPaginationAction}:1;${manga._id}`),
         ],
         [Markup.switchToCurrentChatButton("\u{1F50D}Продолжить поиск...", "")],
     ]);

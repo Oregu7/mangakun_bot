@@ -7,12 +7,7 @@ const ChapterSchema = mongoose.Schema({
     url: { type: String, required: true, unique: true },
     pubdate: { type: Date, default: "" },
     number: { type: Number, required: true },
-    imagesURL: [{
-        src: { type: String, required: true },
-        width: { type: Number, required: true },
-        height: { type: Number, required: true },
-    }],
-    imagesID: [String],
+    cache: [String],
 });
 
 ChapterSchema.plugin(mongoosePaginate);
