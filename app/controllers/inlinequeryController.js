@@ -1,13 +1,23 @@
 const { uid } = require("rand-token");
 const escape = require("escape-html");
 const { MangaModel } = require("../models");
+const { getChatId } = require("../utils").messageManager;
 
 module.exports = async(ctx) => {
     const { query, offset } = ctx.inlineQuery;
     const page = offset.length ? Number(offset) : 1;
-    const queryData = getQueryData(query);
+    const queryData = getQueryData(ctx, query);
     try {
-        const mangaList = await MangaModel.searchManga(queryData, page);
+        let mangaList = [];
+        let extra = { is_personal: false, cache_time: 300 };
+        // ищем мангу
+        if (queryData.genre !== "mymanga") {
+            mangaList = await MangaModel.searchManga(queryData, page);
+        } else {
+            extra = { cache_time: 0, is_personal: true };
+            mangaList = await MangaModel.searchMangaFromSubscribes(queryData, page);
+        }
+        // формируем ответ типа article
         const results = mangaList.docs.map((manga) => ({
             id: uid(11),
             type: "article",
@@ -16,12 +26,9 @@ module.exports = async(ctx) => {
             description: escape(`${manga.description.slice(0, 70)}...`),
             message_text: `/manga${manga.mangaId}`,
         }));
-
-        // доп опции
-        let extra = {
-            cache_time: 300,
-            next_offset: (mangaList.page < mangaList.pages) ? mangaList.page + 1 : "",
-        };
+        // следующая страница
+        extra["next_offset"] = (mangaList.page < mangaList.pages) ? mangaList.page + 1 : "";
+        // данные отсутствуют
         if (!results.length) {
             extra = Object.assign({}, extra, {
                 switch_pm_text: "я не нашел твою мангу :(",
@@ -29,14 +36,15 @@ module.exports = async(ctx) => {
                 // cache_time: 0,
             });
         }
-
-        ctx.answerInlineQuery(results, extra);
+        // отправляем answer
+        return ctx.answerInlineQuery(results, extra);
     } catch (err) {
         console.error(err);
     }
 };
 
-function getQueryData(query) {
+function getQueryData(ctx, query) {
+    const chatId = getChatId(ctx);
     const indx = query.indexOf(":");
     let genre = "";
     let text = query;
@@ -45,5 +53,5 @@ function getQueryData(query) {
         text = query.slice(indx + 1).trim();
     }
 
-    return { genre, text };
+    return { chatId, genre, text };
 }

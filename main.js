@@ -1,25 +1,14 @@
-const fs = require("fs");
-const ip = require("ip");
-
-const env = require("config").get("env");
+const express = require("express");
 const bot = require("./app/bot");
 //start bot
-if (env === "development") {
-    bot.telegram.setWebhook();
-    bot.startPolling();
-} else {
-    const port = 8443;
-    // TLS options
-    const tlsOptions = {
-        key: fs.readFileSync("./webhook_pkey.pem"),
-        cert: fs.readFileSync("./webhook_cert.pem"),
-    };
 
-    // Set telegram webhook
-    bot.telegram.setWebhook(`https://${ip.address()}:${port}/bot-mangakun`, {
-        source: fs.readFileSync("./webhook_cert.pem"),
-    });
+const port = 8080;
+// Set telegram webhook
+//bot.telegram.setWebhook("https://e80670db.ngrok.io/bot-mangakun");
 
-    // Start https webhook
-    bot.startWebhook("/bot-mangakun", tlsOptions, port);
-}
+const app = express();
+app.get("/", (req, res) => res.send("Hello World!"));
+app.use(bot.webhookCallback("/bot-mangakun"));
+app.listen(port, () => {
+    console.log("Example app listening on port 3000!");
+});

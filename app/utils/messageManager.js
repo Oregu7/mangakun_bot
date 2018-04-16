@@ -3,7 +3,7 @@ function getId(type, ctx) {
     if (message) return message[type].id;
     else {
         const { callback_query, inline_query } = update;
-        return callback_query ? callback_query.message[type].id : inline_query ? inline_query.message[type].id : null;
+        return callback_query ? callback_query.message[type].id : inline_query ? inline_query.from.id : null;
     }
 }
 

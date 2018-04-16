@@ -30,9 +30,9 @@ function parseImangeIds(data = []) {
 }
 
 async function downloadChapter(ctx, done, chapter) {
-    const { url, _id: chapterId, imagesID } = chapter;
+    const { url, _id: chapterId, cache } = chapter;
     // отправляем кешированные картинки
-    if (imagesID.length) return sendCachedImages(ctx, chapter, done);
+    if (cache.length) return sendCachedImages(ctx, chapter, done);
     const userID = getChatId(ctx);
     // достаем url's и валидируем по длине
     const images = await getChapterImages(url);
@@ -63,7 +63,7 @@ async function downloadChapter(ctx, done, chapter) {
         imageIds.push(...parseImangeIds(data));
     }
     // кешируем главы
-    await ChapterModel.update({ _id: chapterId }, { $set: { imagesID: imageIds } });
+    await ChapterModel.update({ _id: chapterId }, { $set: { cache: imageIds } });
     // загрузка завершена
     let keyboard = createKeyboardByChapter(chapter);
     await ctx.telegram.sendMessage(userID, `\u{1F4BE}[ <b>${chapter.title}</b> ] - ЗАГРУЗКА ЗАВЕРШЕНА`, Extra.HTML().markup(keyboard));
@@ -71,7 +71,7 @@ async function downloadChapter(ctx, done, chapter) {
 }
 
 async function sendCachedImages(ctx, chapter, done) {
-    const { imagesID: imageIds } = chapter;
+    const { cache: imageIds } = chapter;
     console.log("скачиваю кешированные");
     const userID = getChatId(ctx);
     // формируем количество паков

@@ -78,7 +78,7 @@ async function filterAndCompareResult(rss, group, mangaList) {
         } else {
             let mangaData = await getManga(item.Manga, rss.site);
             let manga = await MangaModel.create(mangaData);
-            console.log(manga);
+            console.log(manga.name, manga.url);
             item.Manga = manga;
         }
 
@@ -102,7 +102,7 @@ function createNotifyUsers(result) {
         let message = `<b>${name}</b>\n<i>${title}</i>\n\n\u{2795}<b>Обновления:</b>\n${chapters}\n${footer}`;
         return {
             message,
-            users: subscribers.map(({ user }) => user.userId),
+            users: subscribers.map(({ user }) => user),
         };
     });
 }
@@ -118,10 +118,11 @@ async function getChapters(rss) {
     });
 
     // удаляем все пустые элементы (undefined, null)
-    return _.compact(chapters);
+    return _.uniqBy(_.compact(chapters), "url");
 }
 
 async function listener(rss) {
+    console.log(`call => ${rss.site}`);
     const newChapters = await getChapters(rss);
     // достаем из базы предыдущие главы
     const oldChapters = storage.get(rss.site) || [];
@@ -129,14 +130,16 @@ async function listener(rss) {
     let updates = getUpdates(oldChapters, newChapters);
     if (updates) {
         let group = groupByManga(updates);
+        console.log(group);
         let mangaList = await MangaModel.getMangaAndLastChapter({
             url: { $in: group.map((item) => item.Manga) },
-        }, group.length);
+        });
+        console.log(mangaList);
         let res = await filterAndCompareResult(rss, group, mangaList);
         try {
             let createdChapters = await ChapterModel.insertMany(compileChapters(res), { ordered: false });
         } catch (err) {
-            console.error(err);
+            console.error(err.message);
         }
         let notify = createNotifyUsers(res);
         process.send(notify);
@@ -145,4 +148,4 @@ async function listener(rss) {
 }
 
 setInterval(listener, 1000 * 10 * 60, ReadMangaRSS);
-setInterval(listener, 1000 * 11 * 60, MintMangaRSS);
+//setInterval(listener, 1000 * 11 * 60, MintMangaRSS);

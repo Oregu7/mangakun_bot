@@ -12,7 +12,11 @@ module.exports = async(ctx, page = 1, limit = 7) => {
     const mangaList = await MangaModel.getUserSubscribes(userId, page, limit);
     if (!mangaList.docs.length) return { empty: true };
     const factor = (mangaList.page - 1) * mangaList.limit;
-    const keyboard = pagination.createPagesInlineKeyboard(userId, mangaList.page, mangaList.pages);
+    const keyboard = Markup.inlineKeyboard([
+        pagination.createPagesInlineKeyboard(userId, mangaList.page, mangaList.pages), [
+            Markup.switchToCurrentChatButton("\u{1F50D}Поиск по подпискам", "mymanga: "),
+        ],
+    ]);
     const mangasTemplate = mangaList.docs.map((manga, indx) => {
         let number = indx + 1 + factor;
         return `${number}) <b>${manga.name}</b> (<i>${manga.title}</i>)
@@ -24,6 +28,6 @@ module.exports = async(ctx, page = 1, limit = 7) => {
     ${mangasTemplate}`;
     return {
         message: compileMessage(message),
-        options: Extra.HTML().markup(Markup.inlineKeyboard(keyboard)),
+        options: Extra.HTML().markup(keyboard),
     };
 };

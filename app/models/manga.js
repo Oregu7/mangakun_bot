@@ -34,7 +34,7 @@ MangaSchema.virtual("lastChapter", {
     foreignField: "manga_id",
     justOne: true,
     options: {
-        select: "number url title imagesID",
+        select: "number url title cache",
         sort: "-number",
     },
 });
@@ -45,7 +45,7 @@ MangaSchema.virtual("firstChapter", {
     foreignField: "manga_id",
     justOne: true,
     options: {
-        select: "number url title imagesID",
+        select: "number url title cache",
         sort: "number",
     },
 });
@@ -80,14 +80,9 @@ MangaSchema.statics.getMangaAndCheckSub = async function(query = {}, userId) {
     return manga;
 };
 
-MangaSchema.statics.getMangaAndLastChapter = function(query = {}, mangaLimit) {
+MangaSchema.statics.getMangaAndLastChapter = function(query = {}) {
     return this.find(query)
-        .populate("lastChapter")
-        .populate({
-            path: "subscribers.user",
-            select: "userId",
-        })
-        .limit(mangaLimit);
+        .populate("lastChapter");
 };
 
 MangaSchema.statics.searchManga = function({ text, genre }, page = 1, limit = 25) {
@@ -98,6 +93,21 @@ MangaSchema.statics.searchManga = function({ text, genre }, page = 1, limit = 25
     return this.paginate(req, {
         select: "-lastChapter -subscribers",
         sort: "-popularity",
+        limit,
+        page,
+    });
+};
+
+MangaSchema.statics.searchMangaFromSubscribes = function({ text, chatId }, page = 1, limit = 25) {
+    const pattern = new RegExp(text, "i");
+    const req = {
+        "subscribers.user": chatId,
+        $or: [{ name: pattern }, { title: pattern }],
+    };
+
+    return this.paginate(req, {
+        select: "-lastChapter -subscribers",
+        sort: "-subscribers.date",
         limit,
         page,
     });
