@@ -2,13 +2,13 @@ const Extra = require("telegraf/extra");
 const Markup = require("telegraf/markup");
 const { MyMangaPageAction } = require("config").get("constants");
 const { MangaModel } = require("../models");
-const { compileMessage } = require("../utils");
+const { compileMessage, messageManager } = require("../utils");
 const Pagination = require("../helpers").pagination;
 
 const pagination = new Pagination(MyMangaPageAction);
 
 module.exports = async(ctx, page = 1, limit = 7) => {
-    const userId = ctx.session.authToken;
+    const userId = messageManager.getChatId(ctx);
     const mangaList = await MangaModel.getUserSubscribes(userId, page, limit);
     if (!mangaList.docs.length) return { empty: true };
     const factor = (mangaList.page - 1) * mangaList.limit;
