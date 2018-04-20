@@ -5,8 +5,7 @@ const hash = require("object-hash");
 
 const { MangaModel, ChapterModel } = require("../models");
 const { compileMessage } = require("../utils");
-const feedparser = require("./feedparser");
-const { getManga } = require("./scraper");
+const { feedparser, scraper: { getManga } } = require("../helpers");
 
 const { ReadMangaRSS, MintMangaRSS } = config.get("rss");
 
@@ -78,14 +77,12 @@ async function filterAndCompareResult(rss, group, mangaList) {
         } else {
             let mangaData = await getManga(item.Manga, rss.site);
             let manga = await MangaModel.create(mangaData);
-            console.log(manga.name, manga.url);
+            console.log(`create => ${manga.name}[${manga.url}]`);
             item.Manga = manga;
         }
-
         // добавляем в главы доп.информацию manga_id и number
         item.Chapters = expandChapters(item);
     }
-
 
     return result;
 }
@@ -122,7 +119,6 @@ async function getChapters(rss) {
 }
 
 async function listener(rss) {
-    console.log(`call => ${rss.site}`);
     const newChapters = await getChapters(rss);
     // достаем из базы предыдущие главы
     const oldChapters = storage.get(rss.site) || [];
@@ -130,11 +126,9 @@ async function listener(rss) {
     let updates = getUpdates(oldChapters, newChapters);
     if (updates) {
         let group = groupByManga(updates);
-        console.log(group);
         let mangaList = await MangaModel.getMangaAndLastChapter({
             url: { $in: group.map((item) => item.Manga) },
         });
-        console.log(mangaList);
         let res = await filterAndCompareResult(rss, group, mangaList);
         try {
             let createdChapters = await ChapterModel.insertMany(compileChapters(res), { ordered: false });
@@ -148,4 +142,4 @@ async function listener(rss) {
 }
 
 setInterval(listener, 1000 * 10 * 60, ReadMangaRSS);
-//setInterval(listener, 1000 * 11 * 60, MintMangaRSS);
+setInterval(listener, 1000 * 12 * 60, MintMangaRSS);

@@ -22,7 +22,7 @@ class Mutex extends EventEmitter {
     done() {
         setTimeout(() => {
             this[_done] = true;
-            this[_broadcastNumbers]();
+            //this[_broadcastNumbers]();
             this.emit("dequeue");
         }, this.time);
     }

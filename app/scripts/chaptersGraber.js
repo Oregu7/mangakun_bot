@@ -1,6 +1,6 @@
 const config = require("config");
 const colors = require("colors");
-const feedparser = require("./feedparser");
+const { feedparser } = require("../helpers");
 const { MangaModel, ChapterModel } = require("../models");
 const sleep = require("thread-sleep");
 

@@ -1,7 +1,7 @@
 const sleep = require("thread-sleep");
 const config = require("config");
 const colors = require("colors");
-const scraper = require("./scraper");
+const { scraper } = require("../helpers");
 const { MangaModel } = require("../models");
 
 async function main(first, last) {

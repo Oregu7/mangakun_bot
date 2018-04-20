@@ -7,7 +7,7 @@ const { localSession } = require("./utils");
 
 const token = config.get("bot.token");
 const bot = new Telegraf(token);
-
+const sendUpdates = require("./scripts/sendUpdates")(bot);
 // middlewares
 bot.use(localSession.middleware());
 bot.hears(/^[A-z0-9]{33}$/, controllers.tokenController.authorizeByToken);
@@ -21,7 +21,7 @@ bot.command("feedback", controllers.feedbackController);
 bot.command("rate", controllers.rateController);
 bot.command("help", controllers.helpController);
 bot.command("genres", controllers.genresController);
-bot.command("get_token", controllers.tokenController.generateToken);
+bot.command("token", controllers.tokenController.generateToken);
 // patterns
 bot.hears(/(http:\/\/)?(www\.)?(readmanga\.me|mintmanga\.com|selfmanga\.ru)\/(\w+)\/?.*/i, controllers.addMangaController);
 bot.hears(/\/manga(\d+)/i, controllers.mangaInfoController);
@@ -32,19 +32,13 @@ bot.on("inline_query", controllers.inlineQueryController);
 bot.on("callback_query", controllers.callbackController);
 bot.on("text", (ctx) => {
     const { entities: isInline = false } = ctx.message;
-    if (!isInline) return ctx.reply("Hai !"); // controllers.startController(ctx);
-    // console.log(ctx.message);
+    if (!isInline) return ctx.reply("Hai !");
 });
 bot.catch((err) => {
     console.error(err);
 });
 
-const childProcess = fork(`${__dirname}/helpers/mangaUpdatesListener.js`);
-childProcess.on("message", (data) => {
-    for (let item of data) {
-        let { message, users } = item;
-        bot.telegram.sendMessage(users[0], message, Telegraf.Extra.HTML().webPreview(false));
-    }
-});
+const childProcess = fork(`${__dirname}/scripts/mangaUpdatesListener.js`);
+childProcess.on("message", sendUpdates);
 
 module.exports = bot;
