@@ -1,5 +1,6 @@
-const { getData } = require("../utils").localSessionManager;
+const { localSessionManager: { getData }, isAdmin } = require("../utils");
 
 module.exports = () => (ctx, next) => {
-    if (ctx.session.allowed || getData(ctx, "allowed")) return next(ctx);
+    if (isAdmin(ctx) || (ctx.session.allowed || getData(ctx, "allowed")))
+        return next(ctx);
 };
