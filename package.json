@@ -1,12 +1,12 @@
 {
     "name": "mangakun_bot",
-    "version": "0.5.3",
+    "version": "0.5.47",
     "description": "",
     "main": "main.js",
     "scripts": {
         "start": "pm2 start ./main.js --name mangakun_bot",
         "dev": "nodemon ./main.js --ignore session_db.json",
-        "uptest": "node ./app/utills/mangaUpdatesListener.js"
+        "uptest": "node ./app/scripts/mangaUpdatesListener.js"
     },
     "author": "baamz",
     "license": "ISC",
