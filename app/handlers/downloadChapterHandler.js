@@ -66,7 +66,7 @@ async function downloadChapter(ctx, done, chapter) {
     const images = await getChapterImages(url);
     const sizeDifference = images.length - images.filter(filterSize).length;
     // если есть невалидные изображения
-    if (sizeDifference) {
+    if (sizeDifference > 1) {
         let message = `ЛУЧШЕ ЧИТАТЬ ЭТУ МАНГУ НА САЙТЕ !
         [${sizeDifference} из ${images.length}] изображений больше максимального размера 2560 x 2560 )`;
         ctx.telegram.sendMessage(userID, compileMessage(message), Markup.inlineKeyboard([
