@@ -56,6 +56,12 @@ function createKeyboardByChapter(chapter) {
 async function downloadChapter(ctx, done, chapter) {
     const { url, _id: chapterId } = chapter;
     const userID = getChatId(ctx);
+    // проверяем (скачали ли уже данную главу, пока мы стояли в очереди)
+    const isCachedChapter = await ChapterModel.findById(chapterId);
+    if (isCachedChapter.cache.length) {
+        sendCachedImages(ctx, isCachedChapter);
+        return done();
+    }
     // достаем url's и валидируем по длине
     const images = await getChapterImages(url);
     const sizeDifference = images.length - images.filter(filterSize).length;

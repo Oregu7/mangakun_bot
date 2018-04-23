@@ -19,7 +19,7 @@ module.exports = async(ctx) => {
         sort: { number: -1 },
         page: Number(page),
         limit: 10,
-        select: "-imagesURL -imagesID -manga_id",
+        select: "-manga_id",
     });
     const factor = (chapters.page - 1) * chapters.limit;
     // проверка на существование глав
@@ -31,7 +31,7 @@ module.exports = async(ctx) => {
         let text = `${number}) <b>${chapter.title}</b>
         <code>${moment(chapter.pubdate).format("L LT")}</code>
         \u{1F4D9}Читать: <a href="${chapter.url}">ссылка</a>
-        \u{23EC}Скачать: /download${manga.mangaId}_${chapter.number}`;
+        ${manga.cache.length ? "\u{1F4BE}" : "\u{23EC}"}Скачать: /download${manga.mangaId}_${chapter.number}`;
         return text;
     }).join("\n\n");
 
