@@ -73,15 +73,19 @@ async function getChapterImages(url) {
     const images = [];
     const regexp = /(rm_h\.init\( \[\[)(.*)\]\]/i;
     const $ = await rp.get(`${url}?mature=1`);
-    const data = $.match(regexp)[2].replace(/[\'\"]+/g, "");
-    data.split("],").forEach((val) => {
-        let el = val.split(",");
-        images.push({
-            src: el[1] + el[2],
-            width: Number(el[3]),
-            height: Number(el[4]),
+    try {
+        const data = $.match(regexp)[2].replace(/['"]+/g, "");
+        data.split("],").forEach((val) => {
+            let el = val.split(",");
+            images.push({
+                src: el[1] + el[2],
+                width: Number(el[3]),
+                height: Number(el[4]),
+            });
         });
-    });
+    } catch (err) {
+        console.error(err);
+    }
 
     return images;
 }

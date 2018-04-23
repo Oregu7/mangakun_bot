@@ -51,6 +51,15 @@ function createKeyboardByChapter(chapter) {
         Markup.callbackButton("Скачать следующую \u{23EC}", `${DownloadNextChapterAction}:${number};${manga_id}`),
     ], { columns: 2 });
 }
+// 
+function sendSizeDifferenceMessage(ctx, chapter, done, { sizeDifference, images }) {
+    const userID = getChatId(ctx);
+    const message = `\u{26A0} <b>${sizeDifference}</b> из <b>${images.length}</b> изображений больше максимального размера (<b>2560</b> x <b>2560</b>)
+    Читать на <a href="${chapter.url}">сайте</a>`;
+    const keyboard = createKeyboardByChapter(chapter);
+    ctx.telegram.sendMessage(userID, compileMessage(message), Extra.HTML().markup(keyboard));
+    return done();
+}
 
 /* === dowload chapter handler === */
 async function downloadChapter(ctx, done, chapter) {
@@ -62,18 +71,12 @@ async function downloadChapter(ctx, done, chapter) {
         sendCachedImages(ctx, isCachedChapter);
         return done();
     }
-    // достаем url's и валидируем по длине
+    // достаем url-ы
     const images = await getChapterImages(url);
+    // валидируем по длине
     const sizeDifference = images.length - images.filter(filterSize).length;
     // если есть невалидные изображения
-    if (sizeDifference > 1) {
-        let message = `ЛУЧШЕ ЧИТАТЬ ЭТУ МАНГУ НА САЙТЕ !
-        [${sizeDifference} из ${images.length}] изображений больше максимального размера 2560 x 2560 )`;
-        ctx.telegram.sendMessage(userID, compileMessage(message), Markup.inlineKeyboard([
-            Markup.urlButton("Читать", url),
-        ]).extra());
-        return done();
-    }
+    if (sizeDifference > 1) return sendSizeDifferenceMessage(ctx, chapter, done, { sizeDifference, images });
     // формируем количество паков
     const packs = _.chunk(images, 10);
     let index = 1;
