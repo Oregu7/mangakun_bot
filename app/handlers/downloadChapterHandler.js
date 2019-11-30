@@ -26,7 +26,7 @@ mutex.on("already_in_queue", (ctx) => {
 });
 mutex.on("number", (ctx, number) => {
     const userID = getChatId(ctx);
-    let message = `\u{26A0}Ваш <b>номер</b> в очереди : <b>${number}</b>`;
+    let message = `\u{2139}Ваш <b>номер</b> в очереди : <b>${number}</b>`;
     return ctx.telegram.sendMessage(userID, message, Extra.HTML());
 });
 
@@ -54,8 +54,8 @@ function createKeyboardByChapter(chapter) {
 // 
 function sendSizeDifferenceMessage(ctx, chapter, done, { sizeDifference, images }) {
     const userID = getChatId(ctx);
-    const message = `\u{26A0} <b>${sizeDifference}</b> из <b>${images.length}</b> изображений больше максимального размера (<b>2560</b> x <b>2560</b>)
-    Читать на <a href="${chapter.url}">сайте</a>`;
+    const message = `\u{26A0} <b>${sizeDifference}</b> из <b>${images.length}</b> изображений, больше максимального размера <b>2560</b> x <b>2560</b>
+    \u{1F4D9}Читать на <a href="${chapter.url}">сайте</a>`;
     const keyboard = createKeyboardByChapter(chapter);
     ctx.telegram.sendMessage(userID, compileMessage(message), Extra.HTML().markup(keyboard));
     return done();

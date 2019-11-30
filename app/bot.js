@@ -11,7 +11,7 @@ const sendUpdates = require("./scripts/sendUpdates")(bot);
 // middlewares
 bot.use(localSession.middleware());
 bot.hears(/^[A-z0-9]{33}$/, controllers.tokenController.authorizeByToken);
-bot.use(middlewares.allowedUsersMiddleware());
+// bot.use(middlewares.allowedUsersMiddleware());
 // commands
 bot.start(controllers.startController);
 bot.command("search", controllers.searchController);
